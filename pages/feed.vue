@@ -6,5 +6,8 @@
    </div>
    </template>
    <script setup>
+   definePageMeta({
+      layout: 'default'
+   })
    const loading = ref(false)
    </script>
