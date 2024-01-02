@@ -115,14 +115,28 @@ const dataFromForm = reactive({
 })
 const login = ref(true)
 
+const client = useSupabaseClient()
 
-import { createClient } from '@supabase/supabase-js'
+const {data: users} = await useAsyncData('users', async () => client.from('Users').select('*').order('id'))
 
-const supabase_url = 'https://ilabflsecnunffcornxh.supabase.co'
-const anon_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlsYWJmbHNlY251bmZmY29ybnhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDM0NDQyOTMsImV4cCI6MjAxOTAyMDI5M30.F7k_JB0F_mIOBCDNdRjwDlFMR7uNzM1HVAMh-qdWB60'
-const supabase = createClient(supabase_url, anon_key)
-
-const signUp = async () => {
+// async function signUp() {
+//    dataFromForm.loading = true
+//    try {
+//     const {data} = await client.from('Users').insert([
+//       {
+//          name: dataFromForm.name,
+//          surname: dataFromForm.surname,
+//          email: dataFromForm.email,
+//          password: dataFromForm.password,
+//          username: dataFromForm.username
+//       }
+//    ])
+//    console.log(data);
+//    }
+//    catch(error){console.log('error -->', error)}
+//    finally{dataFromForm.loading = false}
+// }
+async function signUp() {
   console.log('dataForm', dataFromForm)
   console.log('key', anon_key);
   const { data, error } = await supabase.auth.signUp(
@@ -139,11 +153,11 @@ const signUp = async () => {
   if(error){
     throw error
   }
-
-  // РЕШИТЬ ПРОБЛЕМУ С ДОБАВЛЕНИЕМ В ТАБЛИЦУ
-  const resp = await supabase
-  .from('Users')
-  .insert({id: data.user.id, name: 'a', username: 'u', surname: 's', is_activated: false, email: dataFromForm.email, password: dataFromForm.password})
-  console.log(resp);
 }
+//   // РЕШИТЬ ПРОБЛЕМУ С ДОБАВЛЕНИЕМ В ТАБЛИЦУ
+//   const resp = await supabase
+//   .from('Users')
+//   .insert({id: data.user.id, name: 'a', username: 'u', surname: 's', is_activated: false, email: dataFromForm.email, password: dataFromForm.password})
+//   console.log(resp);
+// }
 </script>

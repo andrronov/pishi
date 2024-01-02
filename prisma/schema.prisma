@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  id       String      @id @default(uuid())
+  email    String   @unique
+  username    String   @unique
+  password String
+  name     String
+  surname  String
+  profileImage String?
+  isActivated Boolean @default(false)
+  activationLink String?  @unique
+  createdAt DateTime @default(now())
+
+  refreshToken Token[]
+  created_posts UserPost[]
+
+  @@map("Users")
+}
+
+model UserPost {
+  id Int @id @default(autoincrement())
+  post_text String
+  post_picture String
+
+  userId String
+  user Users @relation(fields: [userId], references: [id]) //ondelete cascade maybe?
+  @@index([userId])
+
+  likes PostLike[]
+}
+
+model PostLike {
+  id Int @id @default(autoincrement())
+  post_id Int
+  user_id String
+  post UserPost @relation(fields: [post_id], references: [id])
+}
+
+model Token {
+  id        String    @id @default(uuid()) // Переход к uuid
+  token     String    @unique
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  userId    String    // Поддержка для uuid
+  user      Users      @relation(fields: [userId], references: [id])
+  @@index([userId])
+}
