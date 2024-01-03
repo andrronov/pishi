@@ -10,4 +10,9 @@
       layout: 'default'
    })
    const loading = ref(false)
+   
+   const user = useSupabaseUser()
+   onMounted(() => {
+   console.log('supa user', user.value)
+   })
    </script>

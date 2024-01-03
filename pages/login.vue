@@ -10,7 +10,7 @@
          <div>
            <label class="block text-sm font-medium leading-6">Username</label>
            <div class="mt-2">
-             <input v-model="dataFromForm.username" name="email" type="email" autocomplete="email" required="" class="block w-full bg-black rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
+             <input v-model="dataFromForm.email" name="email" type="email" autocomplete="email" required="" class="block w-full bg-black rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
          </div>
  
@@ -25,9 +25,9 @@
              <input v-model="dataFromForm.password" id="password" name="password" type="password" autocomplete="current-password" required="" class="block bg-black w-full rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
          </div>
- 
+         <p v-if="errorLog">{{errorLog}}</p>
          <div>
-           <button @click.prevent="loginUser" class="flex w-full justify-center rounded-md mb-10 bg-white px-3 py-2.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+           <button @click.prevent="signInWithEmail" class="flex w-full justify-center rounded-md mb-10 bg-white px-3 py-2.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             Sign in</button>
          </div>
          <div v-if="dataFromForm.loading" class="flex flex-col items-center">
@@ -114,10 +114,12 @@ const dataFromForm = reactive({
    loading: false
 })
 const login = ref(true)
+const errorLog = ref()
 
-const client = useSupabaseClient()
+const supabase = useSupabaseClient()
+const user = useSupabaseUser()
 
-const {data: users} = await useAsyncData('users', async () => client.from('Users').select('*').order('id'))
+// const {data: users} = await useAsyncData('users', async () => client.from('Users').select('*').order('id'))
 
 // async function signUp() {
 //    dataFromForm.loading = true
@@ -138,22 +140,41 @@ const {data: users} = await useAsyncData('users', async () => client.from('Users
 // }
 async function signUp() {
   console.log('dataForm', dataFromForm)
-  console.log('key', anon_key);
   const { data, error } = await supabase.auth.signUp(
   {
     email: dataFromForm.email,
     password: dataFromForm.password,
     options: {
-      emailRedirectTo: 'https://example.com/welcome'
+      emailRedirectTo: 'http://loclahost:3004/'
     }
   }
 )
   console.log('data', data?.user?.id)
   console.log('err', error)
+console.log('supa user', data)
+
   if(error){
+    errorLog.value = error
     throw error
   }
 }
+
+
+async function signInWithEmail() {
+  console.log('dataForm', dataFromForm)
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: dataFromForm.email,
+    password: dataFromForm.password,
+  })
+  console.log('data', data?.user?.id)
+  console.log('err', error)
+console.log('supa user', data)
+  if(error){
+    errorLog.value = error
+    throw error
+  }
+}
+
 //   // РЕШИТЬ ПРОБЛЕМУ С ДОБАВЛЕНИЕМ В ТАБЛИЦУ
 //   const resp = await supabase
 //   .from('Users')
