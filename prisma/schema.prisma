@@ -18,8 +18,6 @@ model Users {
   name     String
   surname  String
   profileImage String?
-  isActivated Boolean @default(false)
-  activationLink String?  @unique
   createdAt DateTime @default(now())
 
   refreshToken Token[]

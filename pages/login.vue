@@ -168,6 +168,10 @@ async function signInWithEmail() {
   })
   console.log('data', data?.user?.id)
   console.log('err', error)
+  if(data){
+    console.log('successfull sign up')
+    navigateTo('/feed')
+  }
 console.log('supa user', data)
   if(error){
     errorLog.value = error

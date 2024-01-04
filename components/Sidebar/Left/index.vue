@@ -45,12 +45,18 @@
            Photos
          </template>
        </SidebarLeftTab>
+       <button class="p-4 bg-black border-y-2 w-full border-white" @click="logOutUser">Log out</button>
      </div>
    </div>
  </template>
  
  <script setup>
  const {defaultTransition} = useTailwindConfig()
+ const supabase = useSupabaseClient()
+ async function logOutUser(){
+  await supabase.auth.signOut()
+  navigateTo('/login')
+ }
  </script>
  
  <style>
