@@ -89,6 +89,9 @@
            <button @click.prevent="signUp" class="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm leading-6 text-black font-bold shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
             Sign up</button>
          </div>
+         <div class="w-full text-center" v-if="checkMailMessage">
+          <h3>Check your email!</h3>
+         </div>
          <div v-if="dataFromForm.loading" class="flex flex-col items-center">
             <UISpinner />
          </div>
@@ -114,6 +117,7 @@ const dataFromForm = reactive({
    loading: false
 })
 const login = ref(true)
+const checkMailMessage = ref(false)
 const errorLog = ref()
 
 const supabase = useSupabaseClient()
@@ -121,25 +125,8 @@ const user = useSupabaseUser()
 
 // const {data: users} = await useAsyncData('users', async () => client.from('Users').select('*').order('id'))
 
-// async function signUp() {
-//    dataFromForm.loading = true
-//    try {
-//     const {data} = await client.from('Users').insert([
-//       {
-//          name: dataFromForm.name,
-//          surname: dataFromForm.surname,
-//          email: dataFromForm.email,
-//          password: dataFromForm.password,
-//          username: dataFromForm.username
-//       }
-//    ])
-//    console.log(data);
-//    }
-//    catch(error){console.log('error -->', error)}
-//    finally{dataFromForm.loading = false}
-// }
 async function signUp() {
-  console.log('dataForm', dataFromForm)
+  dataFromForm.loading = true
   const { data, error } = await supabase.auth.signUp(
   {
     email: dataFromForm.email,
@@ -149,9 +136,13 @@ async function signUp() {
     }
   }
 )
-  console.log('data', data?.user?.id)
-  console.log('err', error)
-console.log('supa user', data)
+if(data){
+  dataFromForm.loading = false
+  checkMailMessage.value = true
+}
+//   console.log('data', data?.user?.id)
+//   console.log('err', error)
+// console.log('supa user', data)
 
   if(error){
     errorLog.value = error
