@@ -45,8 +45,37 @@
            Photos
          </template>
        </SidebarLeftTab>
-       <button class="p-4 bg-black border-y-2 w-full border-white" @click="logOutUser">Log out</button>
+       <button class="p-4 bg-black border-y-2 w-full border-white dark:bg-white dark:text-black dark:border-black" @click="logOutUser">Log out</button>
      </div>
+
+     <div class="flex flex-row items-center justify-center px-2 py-2 mx-auto mt-auto mb-5 cursor-pointer w-14 xl:w-full hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
+
+            <div class="flex flex-row">
+                <img src="/me.jpg" class="w-10 h-10">
+                <div class="flex-col hidden ml-2 xl:block">
+                    <h1 class="text-sm font-bold text-gray-300 dark:text-gray-800">
+                        <!-- {{ user.name }} -->
+                        Andrew Andronov
+                    </h1> 
+                    <p class="text-sm text-gray-400 dark:text-gray-700">
+                        <!-- {{ user.handle }} -->
+                        @andrronov
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- ICON -->
+            <!-- <div class="hidden ml-auto xl:block">
+                <div class="w-6 h-6">
+                  -->
+                    <!-- <ChevronDownIcon /> -->
+                <!-- </div>
+            </div> -->
+
+
+
+        </div>
    </div>
  </template>
  

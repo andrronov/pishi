@@ -2,7 +2,6 @@
    <div>
       <MainSection :loading="loading">
          <p>ada</p>
-         <h1>User: {{ user }}</h1>
       </MainSection>
    </div>
    </template>
@@ -14,11 +13,23 @@
    
    const user = useSupabaseUser()
    const supabase = useSupabaseClient()
-   const sess = await supabase.auth.getSession()
-   onMounted(() => {
-   console.log('supa user', user.value)
-   if(sess){
-      console.log('ses', sess);
-   }
-   })
+   const session = await supabase.auth.getSession()
+   const store = useUserStore()
+
+   console.log(session.data.session.user.id)
+   const { data, pending, error, refresh } = await useAsyncData(
+       '',
+       () => {
+         const userID = session.data.session.user.id
+         supabase.from('profiles').select().eq('id', userID)
+         .then(result => {
+            if(result.data.length){
+               store.updateUser(result.data[0])
+            }
+         })
+       }
+   );
+
+   const storeData = store.getUser()
+   // console.log(store.$state.uData.id)
    </script>
