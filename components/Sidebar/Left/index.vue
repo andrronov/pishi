@@ -1,7 +1,7 @@
 <template>
    <div class="flex flex-col h-screen">
      <NuxtLink to="/">
-       <h1 class="pishi p-2 my-2 text-white dark:text-black text-2xl text-center hover:text-gray-300 light:text-black" :class="defaultTransition">PISHI</h1>
+       <h1 class="pishi p-2 my-2 text-white dark:text-black text-2xl text-center hover:text-gray-300" :class="defaultTransition">PISHI</h1>
      </NuxtLink>
      <div class="mt-2 space-y-3">
        <SidebarLeftTab active>
@@ -54,8 +54,8 @@
                 <img :src="user.avatar" class="w-10 h-10">
                 <div class="flex-col hidden ml-2 xl:block">
                     <h1 v-if="user" class="text-sm font-bold text-gray-300 dark:text-gray-800">
-                        {{ user.name }}
-                        <!-- Andrew Andronov -->
+                        <!-- {{ user.name }} -->
+                        Andrew Andronov
                     </h1> 
                     <h1 v-else class="text-sm font-bold text-gray-300 dark:text-gray-800">
                         Undefined

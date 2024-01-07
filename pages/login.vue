@@ -62,13 +62,13 @@
            <div class="mt-2">
              <input v-model="dataFromForm.surname" required="" class="block w-full rounded-md bg-black text-white border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
-         </div>
+         </div> -->
          <div>
            <label class="block text-sm font-medium leading-6">Nickname</label>
            <div class="mt-2">
              <input v-model="dataFromForm.username" required="" class="block w-full rounded-md bg-black text-white border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
-         </div> -->
+         </div>
          <div>
            <label for="email" class="block text-sm font-medium leading-6">Email address</label>
            <div class="mt-2">
@@ -129,6 +129,7 @@ async function signUp() {
   dataFromForm.loading = true
   const { data, error } = await supabase.auth.signUp(
   {
+    // nickname: dataFromForm.username,
     email: dataFromForm.email,
     password: dataFromForm.password,
     options: {

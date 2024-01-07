@@ -88,7 +88,7 @@ function aaa(){
  function createPost(){
    loading.value = true
    supabase.from('posts').insert({
-      author: 111,
+      author: session.data.session.user.id,
       title: postTitle.value,
       text: postText.value
    }).then(res => {
@@ -103,9 +103,9 @@ function aaa(){
          }, 2500)
       } else {
          error.value = res.error
+         loading.value = false
          setTimeout(() => {
             error.value = null
-            loading.value = false
          }, 5000);
       }
    })
