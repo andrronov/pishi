@@ -50,20 +50,23 @@
 
      <div class="flex flex-row items-center justify-center px-2 py-2 mx-auto mt-auto mb-5 cursor-pointer w-14 xl:w-full hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
 
-            <div class="flex flex-row">
-                <img src="/me.jpg" class="w-10 h-10">
+            <div v-if="user" class="flex flex-row">
+                <img :src="user.avatar" class="w-10 h-10">
                 <div class="flex-col hidden ml-2 xl:block">
-                    <h1 class="text-sm font-bold text-gray-300 dark:text-gray-800">
-                        <!-- {{ user.name }} -->
-                        Andrew Andronov
+                    <h1 v-if="user" class="text-sm font-bold text-gray-300 dark:text-gray-800">
+                        {{ user.name }}
+                        <!-- Andrew Andronov -->
+                    </h1> 
+                    <h1 v-else class="text-sm font-bold text-gray-300 dark:text-gray-800">
+                        Undefined
                     </h1> 
                     <p class="text-sm text-gray-400 dark:text-gray-700">
                         <!-- {{ user.handle }} -->
                         @andrronov
                     </p>
                 </div>
-
             </div>
+            <UISpinner v-else />
 
             <!-- ICON -->
             <!-- <div class="hidden ml-auto xl:block">
@@ -81,11 +84,19 @@
  
  <script setup>
  const {defaultTransition} = useTailwindConfig()
+
  const supabase = useSupabaseClient()
  async function logOutUser(){
   await supabase.auth.signOut()
   navigateTo('/login')
  }
+
+ 
+const user = ref(null)
+watchEffect(() => {
+user.value = useGetUserStore()
+})
+
  </script>
  
  <style>

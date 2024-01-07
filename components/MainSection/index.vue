@@ -7,6 +7,8 @@
          <UISpinner />
       </div>
       <div v-else>
+         <button @click="modalOpen = true">Add post</button>
+         <AddPost :modal-open="modalOpen" @close-modal="modalOpen = false" />
          <slot></slot>
       </div>
    </div>
@@ -14,6 +16,8 @@
 
 <script setup>
 const {defaultTransition} = useTailwindConfig()
+
+const modalOpen = ref(false)
 
 const props = defineProps({
    loading: {

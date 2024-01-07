@@ -30,6 +30,7 @@
        }
    );
 
-   const storeData = store.getUser()
+   const profile = store.getUser()
+   console.log(profile);
    // console.log(store.$state.uData.id)
    </script>

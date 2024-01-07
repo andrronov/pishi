@@ -1,13 +1,13 @@
 <template>
-   <div class="h-screen">
-   <slot />
+  <div :class="{'dark': lightMode}">
+    <div class="h-screen">
+      <slot />
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-
-}
+<script setup>
+const lightMode = ref(false)
 </script>
 
 <style>
