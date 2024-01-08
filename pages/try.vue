@@ -1,5 +1,7 @@
 <template>
-  try
+  <!-- <UseTimeAgo v-slot="{ timeAgo }" :time="new Date(2021, 0, 1)">
+    Time Ago: {{ timeAgo }}
+  </UseTimeAgo> -->a
   <!-- <AddPost /> -->
  </template>
  

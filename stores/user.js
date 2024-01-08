@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', {
    }),
    actions: {
       updateUser(userData){
-         // console.log('udata', userData)
+         console.log('udata', userData)
          this.uData = userData
       },
       getUser(){

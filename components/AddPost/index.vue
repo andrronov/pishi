@@ -71,10 +71,12 @@
  const emit = defineEmits({
    closeModal(){
       return false
-   }
+   },
+   reloadPosts(){}
  })
  const supabase = useSupabaseClient()
  const session = await supabase.auth.getSession()
+
 function aaa(){
    console.log('aaa');
 }
@@ -87,6 +89,7 @@ function aaa(){
 
  function createPost(){
    loading.value = true
+   console.log('uuuuuuuuu', session);
    supabase.from('posts').insert({
       author: session.data.session.user.id,
       title: postTitle.value,
@@ -100,13 +103,15 @@ function aaa(){
          setTimeout(() =>{
             success.value = false
             emit('closeModal')
-         }, 2500)
+            emit('reloadPosts')
+         }, 1000)
       } else {
          error.value = res.error
          loading.value = false
          setTimeout(() => {
             error.value = null
          }, 5000);
+         throw new Error(res.error)
       }
    })
  }

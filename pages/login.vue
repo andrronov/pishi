@@ -170,11 +170,4 @@ console.log('supa user', data)
     throw error
   }
 }
-
-//   // РЕШИТЬ ПРОБЛЕМУ С ДОБАВЛЕНИЕМ В ТАБЛИЦУ
-//   const resp = await supabase
-//   .from('Users')
-//   .insert({id: data.user.id, name: 'a', username: 'u', surname: 's', is_activated: false, email: dataFromForm.email, password: dataFromForm.password})
-//   console.log(resp);
-// }
 </script>

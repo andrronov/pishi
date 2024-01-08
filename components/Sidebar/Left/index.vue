@@ -54,15 +54,15 @@
                 <img :src="user.avatar" class="w-10 h-10">
                 <div class="flex-col hidden ml-2 xl:block">
                     <h1 v-if="user" class="text-sm font-bold text-gray-300 dark:text-gray-800">
-                        <!-- {{ user.name }} -->
-                        Andrew Andronov
+                        {{ user.name }} {{ user.surname }}
+                        <!-- Andrew Andronov -->
                     </h1> 
                     <h1 v-else class="text-sm font-bold text-gray-300 dark:text-gray-800">
                         Undefined
                     </h1> 
                     <p class="text-sm text-gray-400 dark:text-gray-700">
-                        <!-- {{ user.handle }} -->
-                        @andrronov
+                        @{{ user.id }}
+                        <!-- @andrronov -->
                     </p>
                 </div>
             </div>
@@ -86,6 +86,7 @@
  const {defaultTransition} = useTailwindConfig()
 
  const supabase = useSupabaseClient()
+
  async function logOutUser(){
   await supabase.auth.signOut()
   navigateTo('/login')
@@ -93,10 +94,13 @@
 
  
 const user = ref(null)
+
 watchEffect(() => {
 user.value = useGetUserStore()
 })
-
+setTimeout(() => {
+  console.log(user.value);  
+}, 3000);
  </script>
  
  <style>

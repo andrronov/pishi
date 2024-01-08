@@ -17,7 +17,7 @@
                <button>Post photo</button>
             </div>
          </div>
-         <AddPost :modal-open="modalOpen" @close-modal="modalOpen = false" />
+         <AddPost :modal-open="modalOpen" @close-modal="modalOpen = false" @reload-posts="reloadPosts" />
          <slot></slot>
       </div>
    </div>
@@ -26,7 +26,16 @@
 <script setup>
 const {defaultTransition} = useTailwindConfig()
 
+const emit = defineEmits({
+   reloadPosts(){}
+})
+
 const modalOpen = ref(false);
+
+function reloadPosts(){
+   console.log('emitting to feed');
+   emit('reloadPosts');
+}
 
 const props = defineProps({
   loading: {
