@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MainSection @reload-posts="fetchPosts" :loading="loading">
+    <MainSection @reload-posts="fetchPosts" :loading="loads.loadPosts">
       <div v-if="posts">
 
          <!-- POST CONTENT -->
@@ -40,8 +40,8 @@
                   <NuxtIcon name="share" class="bg-white text-black dark:bg-black dark:text-white hover:bg-gray-300 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 p-1 scale-150 cursor-pointer" />
                </template> 
                <template v-if="openComments[post.id]" v-slot:commentSection>
-                  <UISpinner class="self-center my-4" v-if="commsLoading" />
-                  <PostComment v-for="(comm, index) in postComments" :key="index">
+                  <UISpinner class="self-center my-4" v-if="loads.loadComms" />
+                  <PostComment v-for="(comm, index) in postComments[post.id]" :key="index">
                         <template v-slot:nickname>
                            @{{ comm.profiles.id }}
                         </template>
@@ -56,8 +56,8 @@
                         </template>
                      </PostComment>
                      <div class="flex flex-row items-center mt-5">
-                        <input @keydown.enter="postComment" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
-                        <button @click="postComment" class="text-white font-semibold p-2 border-2 border-white dark:text-black dark:border-black hover:bg-gray-500">Send</button>
+                        <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
+                        <button @click="postComment(post.id)" class="text-white font-semibold p-2 border-2 border-white dark:text-black dark:border-black hover:bg-gray-500">Send</button>
                      </div>
                </template>
                </Post>
@@ -76,13 +76,26 @@ definePageMeta({
   layout: "default",
 });
 
-const loading = ref(false);
+// VARIABLES ---------
+const loads = reactive({
+   loadPosts: false,
+   loadComms: {}
+})
 const errorLog = ref(null)
+
+let posts = ref(null)
+
+// let postComments = ref(null)
+let postComments = reactive({})
+const openComments = reactive({})
+const commentText = ref('')
 
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
 const session = await supabase.auth.getSession();
 const store = useUserStore();
+// ---------------------
+
 
 // STORE USER DATA
 const { data, pending, error, refresh } = await useAsyncData("", () => {
@@ -97,48 +110,53 @@ const { data, pending, error, refresh } = await useAsyncData("", () => {
    });
 });
 
+// FETCH POSTS
 async function fetchPosts(){
-   loading.value = true
+   loads.loadPosts = true
    const postsResponse = await supabase.from('posts').select('id, title, created_at, text, img, profiles(id, avatar, name, surname)').order('created_at', {ascending: false})
    if(!postsResponse.error){
       posts.value = postsResponse.data
       console.log('posts', postsResponse);
-      loading.value = false
+      loads.loadPosts = false
    } else {
       errorLog.value = postsResponse.error
-      loading.value = false
+      loads.loadPosts = false
       throw new Error(postsResponse.error)
    }
 }
 
-let postComments = ref(null)
-const commentText = ref('')
-const openComments = reactive({})
-const commsLoading = ref(false)
-
+// FETCH COMMENTS
 async function fetchPostsComments(postId){
-   commsLoading.value = true
-   openComments[postId] = !openComments[postId]
-   const commsResponse = await supabase.from('post_comments').select('*, profiles(*)').eq('post', postId)
-   if(!commsResponse.error){
-      postComments.value = commsResponse.data
-      console.log(postComments.value);
-      commsLoading.value = false
-   } else{
-      commsLoading.value = false
-      console.error(commsResponse.error);
-      throw new Error(commsResponse.error)
-   }
-   if(!openComments[postId]){
-      postComments.value = null
-   }
+      loads.loadComms = true
+      openComments[postId] = !openComments[postId]
+      const commsResponse = await supabase.from('post_comments').select('*, profiles(*)').eq('post', postId)
+      if(!commsResponse.error){
+         postComments[postId] = commsResponse.data
+         console.log(postComments);
+         loads.loadComms = false
+      } else{
+         loads.loadComms = false
+         console.error(commsResponse.error);
+         throw new Error(commsResponse.error)
+      }
+   // if(!openComments[postId]){
+   //    console.log(openComments);
+   //    console.log('closed', postId);
+   // }
 }
-function postComment(){
-   console.log(commentText.value);
+// POST A COMMENT
+async function postComment(postId){
+   console.log('comm', commentText.value, 'post id', postId);;
+   // const commentRes = await supabase.from('post_comments').insert({author: session.data.session.user.id})
+   const commentRes = await supabase.from('post_comments').insert({author: store.getUser().id, post: postId, text: commentText.value})
+   if(!commentRes.error){
+      commentText.value = ''
+      fetchPostsComments(postId)
+      openComments[postId] = true
+   }
 }
 
 // LOAD POSTS
-let posts = ref(null)
 watchEffect(async () => {
    fetchPosts()
 })
