@@ -20,9 +20,10 @@
             <NuxtIcon name="like" />
             <slot name="postLikes"></slot>
          </div>
-         <NuxtIcon name="comment" class="bg-white text-black dark:bg-black dark:text-white hover:bg-gray-300 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 p-1 scale-150 mr-5 cursor-pointer" />
-         <NuxtIcon name="share" class="bg-white text-black dark:bg-black dark:text-white hover:bg-gray-300 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 p-1 scale-150 cursor-pointer" />
+         <slot name="commentsButton"></slot>
+         <slot name="shareButton"></slot>
       </div>
+      <slot name="commentSection"></slot>
    </div>
 </template>
 
