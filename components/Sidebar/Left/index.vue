@@ -4,16 +4,16 @@
        <h1 class="pishi p-2 my-2 text-white dark:text-black xs:text-xl sm:text-2xl text-center hover:text-gray-300" :class="defaultTransition">PISHI</h1>
      </NuxtLink>
      <div class="mt-2 space-y-3">
-       <SidebarLeftTab active>
-         <template v-slot:icon>
-           <nuxt-icon name="home"></nuxt-icon>
-         </template>
-         <template v-slot:name>
-           Feed
-         </template>
-       </SidebarLeftTab>
+       <SidebarLeftTab :link="'/feed'" :active="route.name == 'feed'">
+          <template v-slot:icon>
+            <nuxt-icon name="home"></nuxt-icon>
+          </template>
+          <template v-slot:name>
+            Feed
+          </template>
+        </SidebarLeftTab>
        
-       <SidebarLeftTab>
+       <SidebarLeftTab :link="'/alerts'" :active="route.name == 'alerts'">
          <template v-slot:icon>
            <nuxt-icon name="bell"></nuxt-icon>
          </template>
@@ -21,7 +21,7 @@
            Notifications
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab>
+       <SidebarLeftTab :active="route.name == 'messages'">
          <template v-slot:icon>
            <nuxt-icon name="envelope"></nuxt-icon>
          </template>
@@ -29,7 +29,7 @@
            Messages
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab>
+       <SidebarLeftTab :link="'/friends'" :active="route.name == 'friends'">
          <template v-slot:icon>
            <nuxt-icon name="user-group"></nuxt-icon>
          </template>
@@ -37,7 +37,7 @@
            Friends
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab>
+       <SidebarLeftTab :active="route.name == 'photos'">
          <template v-slot:icon>
            <nuxt-icon name="camera"></nuxt-icon>
          </template>
@@ -45,7 +45,7 @@
            Photos
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab>
+       <SidebarLeftTab @click="logOutUser">
          <template v-slot:icon>
            <nuxt-icon name="leave-door"></nuxt-icon>
          </template>
@@ -74,40 +74,42 @@
                 </div>
             </div>
             <UISpinner v-else />
-
-            <!-- ICON -->
-            <!-- <div class="hidden ml-auto xl:block">
-                <div class="w-6 h-6">
-                  -->
-                    <!-- <ChevronDownIcon /> -->
-                <!-- </div>
-            </div> -->
-
-
-
         </div>
    </div>
  </template>
  
  <script setup>
- const {defaultTransition} = useTailwindConfig()
+const {defaultTransition} = useTailwindConfig()
+// VARIABLES
+const store = useUserStore();
+const supabase = useSupabaseClient()
+const session = await supabase.auth.getSession();
+const route = useRoute()
+const user = ref(null)
 
- const supabase = useSupabaseClient()
+
+// STORE USER DATA
+const { data, pending, error, refresh } = await useAsyncData("", () => {
+   const userID = session.data.session.user.id;
+   console.log('uId ', userID);
+   supabase
+   .from("profiles").select().eq("id", userID)
+   .then((result) => {
+      if (result.data.length) {
+         store.updateUser(result.data[0]);
+      } else{console.log('no result')}
+   });
+});
+
 
  async function logOutUser(){
   await supabase.auth.signOut()
   navigateTo('/login')
  }
 
- 
-const user = ref(null)
-
 watchEffect(() => {
 user.value = useGetUserStore()
 })
-setTimeout(() => {
-  console.log(user.value);  
-}, 3000);
  </script>
  
  <style>

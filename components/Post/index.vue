@@ -16,10 +16,7 @@
          <slot name="postImage"></slot>
       </div>
       <div class="flex flex-row h-auto items-center">
-         <div class="flex flex-row items-center gap-1 bg-white hover:bg-gray-300 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 text-black dark:bg-black scale-150 dark:text-white p-1 ml-3 mr-7 cursor-pointer">
-            <NuxtIcon name="like" />
             <slot name="postLikes"></slot>
-         </div>
          <slot name="commentsButton"></slot>
          <slot name="shareButton"></slot>
       </div>

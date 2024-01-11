@@ -1,6 +1,7 @@
 <template>
-  <Post /> 
-  <PostComment />
+  <!-- <Post /> 
+  <PostComment /> -->
+  <Friends />
 </template>
 
 <script setup>

@@ -31,22 +31,35 @@
 
                <!-- POST INTERFACE -->
 
-               <template v-slot:postLikes>
-                  <p class="text-xs">1,9K</p></template>
+               <template v-slot:postLikes v-if="post.post_likes">
+                  <div v-if="!post.isLiked" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6">
+                     <NuxtIcon @click="likePost(post.id)" name="like" class="" />
+                     <p class="text-xs">{{ post.post_likes.length }}</p>
+                  </div>
+                  <div v-if="post.isLiked" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
+                     <NuxtIcon name="like" class="" />
+                     <p class="text-xs">{{ post.post_likes.length }}</p>
+                  </div>
+                  
+                  <!-- <div class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
+                  <NuxtIcon @click="likePost(post.id)" v-model="post.isLiked" name="like" :class="post.isLiked ? 'text-green-500' : 'text-red-500' "  />
+                     <p class="text-xs">{{ post.post_likes.length }}</p>
+                  </div> -->
+               </template>
                <template v-slot:commentsButton>
-                  <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" class="bg-white text-black dark:bg-black dark:text-white hover:bg-gray-300 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 p-1 scale-150 mr-5 cursor-pointer" />
+                  <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" :class="defaultButton" class="p-1 scale-150 mr-5" />
                </template>
                <template v-slot:shareButton>
-                  <NuxtIcon name="share" class="bg-white text-black dark:bg-black dark:text-white hover:bg-gray-300 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-300 p-1 scale-150 cursor-pointer" />
+                  <NuxtIcon name="share" :class="defaultButton" class="p-1 scale-150" />
                </template> 
                <template v-if="openComments[post.id]" v-slot:commentSection>
                   <UISpinner class="self-center my-4" v-if="loads.loadComms" />
-                  <PostComment v-for="(comm, index) in postComments[post.id]" :key="index">
+                  <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition">
                         <template v-slot:nickname>
                            @{{ comm.profiles.id }}
                         </template>
                         <template v-slot:created_at>
-                           | {{ formatTimeAgo(new Date(comm.profiles.created_at)) }}
+                           | {{ formatTimeAgo(new Date(comm.created_at)) }}
                         </template>
                         <template v-slot:commentary>
                            {{ comm.text }}
@@ -57,20 +70,21 @@
                      </PostComment>
                      <div class="flex flex-row items-center mt-5">
                         <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
-                        <button @click="postComment(post.id)" class="text-white font-semibold p-2 border-2 border-white dark:text-black dark:border-black hover:bg-gray-500">Send</button>
+                        <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
                      </div>
                </template>
                </Post>
          </div>
-         <p v-if="posts.length < 1" class="text-white text-center dark:text-black">Create your first post!</p>
       </div>
       <h3 v-else>Error: {{ errorLog }}</h3>
+      <p v-if="posts.length < 1" class="text-white text-center dark:text-black">Create your first post!</p>
     </MainSection>
   </div>
 </template>
 
 <script setup>
 import { formatTimeAgo } from '@vueuse/core'
+const {defaultButton, defaultTransition} = useTailwindConfig()
 
 definePageMeta({
   layout: "default",
@@ -83,12 +97,14 @@ const loads = reactive({
 })
 const errorLog = ref(null)
 
-let posts = ref(null)
+let posts = reactive({})
 
-// let postComments = ref(null)
 let postComments = reactive({})
 const openComments = reactive({})
 const commentText = ref('')
+
+let likes = reactive({})
+const isLiked = ref(false)
 
 const user = useSupabaseUser();
 const supabase = useSupabaseClient();
@@ -113,15 +129,20 @@ const { data, pending, error, refresh } = await useAsyncData("", () => {
 // FETCH POSTS
 async function fetchPosts(){
    loads.loadPosts = true
-   const postsResponse = await supabase.from('posts').select('id, title, created_at, text, img, profiles(id, avatar, name, surname)').order('created_at', {ascending: false})
+   const postsResponse = await supabase.from('posts').select('id, title, created_at, text, img, profiles(id, avatar, name, surname), post_likes(id, post_id, user_id, created_at)').order('created_at', {ascending: false})
    if(!postsResponse.error){
-      posts.value = postsResponse.data
-      console.log('posts', postsResponse);
+      posts = postsResponse.data
+      console.log('psts', posts);
+      // check if liked
+      posts.forEach(post => {
+         post.post_likes.forEach(el => post.isLiked = (el.user_id == store.getUser().id))
+      })
       loads.loadPosts = false
    } else {
       errorLog.value = postsResponse.error
       loads.loadPosts = false
-      throw new Error(postsResponse.error)
+      console.log(postsResponse.error);
+      throw Error(postsResponse.error)
    }
 }
 
@@ -155,6 +176,12 @@ async function postComment(postId){
       openComments[postId] = true
    }
 }
+
+// FETCH LIKES
+async function fetchLikes(){}
+
+// LIKE A POST
+async function likePost(postId){}
 
 // LOAD POSTS
 watchEffect(async () => {
