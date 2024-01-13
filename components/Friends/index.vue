@@ -17,11 +17,6 @@
 
   <div v-if="currentTab == 0">
     <div v-if="followers">
-      <h1
-        class="text-sm dark:bg-black dark:text-white bg-white text-black text-center sm:text-xl leading-7"
-      >
-        Followers
-      </h1>
       <div class="flex flex-col">
         <FriendsList v-for="(follower, index) in followers" :key="index">
           <template #avatar>
@@ -35,7 +30,7 @@
             {{ follower.profiles.name }}
             {{ follower.profiles.surname }}
           </template>
-          <template #nickname> @{{ follower.profiles.user_id }} </template>
+          <template #nickname> @{{ follower.profiles.id }} </template>
           <template #lastSeen>
             <div class="shrink-0 flex flex-col items-end">
               <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
@@ -59,9 +54,43 @@
   <UISpinner v-if="loads.followersLoad" class="self-center mt-5" />
   
   <div v-if="currentTab == 1">
-   <h1 class="text-sm dark:bg-black dark:text-white bg-white text-black text-center sm:text-xl leading-7">
-      Following </h1>
+    <div v-if="following">
+      <div class="flex flex-col">
+        <FriendsList v-for="(following, index) in following" :key="index">
+          <template #avatar>
+            <img
+              :src="following.profiles.avatar"
+              alt="avatar"
+              class="h-12 w-12 flex-none bg-gray-50"
+            />
+          </template>
+          <template #name>
+            {{ following.profiles.name }}
+            {{ following.profiles.surname }}
+          </template>
+          <template #nickname> @{{ following.profiles.id }} </template>
+          <template #lastSeen>
+            <div class="shrink-0 flex flex-col items-end">
+              <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
+                <time>3h ago</time>
+              </p>
+              <div v-else class="mt-1 flex items-center gap-x-1.5">
+                <div class="flex-none rounded-full bg-emerald-500/20 p-1">
+                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                </div>
+                <p class="text-xs leading-5 text-gray-500">Online</p>
+              </div>
+            </div>
+          </template>
+        </FriendsList>
+        <h1 v-if="following.length < 1" class="text-white dark:text-black mt-5">
+          You don't have followers :(
+        </h1>
+      </div>
+    </div>
   </div>
+  <UISpinner v-if="loads.followingsLoad" class="self-center mt-5" />
+
 </template>
 
 <script setup>
@@ -80,12 +109,12 @@ let followers = ref(null);
 let following = ref(null);
 const loads = reactive({
   followersLoad: false,
+  followingsLoad: false
 });
 // ---------
 
 // FETCH FOLLOWERS
 async function fetchFollowers() {
-  console.log("u", userId);
   loads.followersLoad = true;
   const followersRes = await supabase
     .from("followers")
@@ -101,5 +130,6 @@ async function fetchFollowers() {
 
 watchEffect(() => {
   fetchFollowers();
+  // fetchFollowings()
 });
 </script>
