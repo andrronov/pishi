@@ -51,7 +51,7 @@
  
      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
        <form class="space-y-6">
-         <!-- <div>
+         <div>
            <label class="block text-sm font-medium leading-6">Name</label>
            <div class="mt-2">
              <input v-model="dataFromForm.name" required="" class="block w-full bg-black text-white rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
@@ -62,7 +62,7 @@
            <div class="mt-2">
              <input v-model="dataFromForm.surname" required="" class="block w-full rounded-md bg-black text-white border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
-         </div> -->
+         </div>
          <div>
            <label class="block text-sm font-medium leading-6">Nickname</label>
            <div class="mt-2">
@@ -126,6 +126,7 @@ const user = useSupabaseUser()
 // const {data: users} = await useAsyncData('users', async () => client.from('Users').select('*').order('id'))
 
 async function signUp() {
+  console.log('data from form', dataFromForm);
   dataFromForm.loading = true
   const { data, error } = await supabase.auth.signUp(
   {
@@ -133,6 +134,11 @@ async function signUp() {
     email: dataFromForm.email,
     password: dataFromForm.password,
     options: {
+      data: {
+        name: dataFromForm.name,
+        surname: dataFromForm.surname,
+        avatar: 'https://publicdomainvectors.org/tn_img/abstract-user-flat-4.webp'
+      },
       emailRedirectTo: 'http://loclahost:3004/'
     }
   }

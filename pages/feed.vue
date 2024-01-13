@@ -7,7 +7,7 @@
 
          <div v-for="(post, index) in posts" :key="index">
             <Post>
-               <template v-slot:postData>
+               <template #postData>
                   <img :src="post.profiles.avatar" class="w-12 h-12" alt="avatar">
                   <div class="flex flex-col">
                      <p class="font-medium">
@@ -17,21 +17,21 @@
                         {{ formatTimeAgo(new Date(post.created_at)) }}</p>
                   </div>
                </template>
-               <template v-slot:postTitle>
+               <template #postTitle>
                   <h2 class="text-sm dark:bg-black dark:text-white bg-white text-black text-center sm:text-xl leading-7">
                      {{ post.title }}
                   </h2>
                </template>
-               <template v-slot:postText>
+               <template #postText>
                   <p>{{ post.text }}</p>
                </template>
-               <template v-slot:postImage>
+               <template #postImage>
                   <img src="/football.jpg" alt="">
                </template>
 
                <!-- POST INTERFACE -->
 
-               <template v-slot:postLikes v-if="post.post_likes">
+               <template #postLikes v-if="post.post_likes">
                   <div v-if="!post.isLiked" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6">
                      <NuxtIcon @click="likePost(post.id)" name="like" class="" />
                      <p class="text-xs">{{ post.post_likes.length }}</p>
@@ -46,25 +46,28 @@
                      <p class="text-xs">{{ post.post_likes.length }}</p>
                   </div> -->
                </template>
-               <template v-slot:commentsButton>
+               <template #commentsButton>
                   <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" :class="defaultButton" class="p-1 scale-150 mr-5" />
                </template>
-               <template v-slot:shareButton>
+               <template #shareButton>
                   <NuxtIcon name="share" :class="defaultButton" class="p-1 scale-150" />
                </template> 
-               <template v-if="openComments[post.id]" v-slot:commentSection>
+               <template v-if="openComments[post.id]" #commentSection>
                   <UISpinner class="self-center my-4" v-if="loads.loadComms" />
-                  <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition">
-                        <template v-slot:nickname>
+                  <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition" :userAvatar="comm.avatar">
+                     <template #avatar>
+                        <img class="h-12 w-12 flex-none bg-gray-50" :src="comm.profiles.avatar" alt="" />
+                     </template>   
+                     <template #nickname>
                            @{{ comm.profiles.id }}
                         </template>
-                        <template v-slot:created_at>
+                        <template #created_at>
                            | {{ formatTimeAgo(new Date(comm.created_at)) }}
                         </template>
-                        <template v-slot:commentary>
+                        <template #commentary>
                            {{ comm.text }}
                         </template>
-                        <template v-slot:likes>
+                        <template #likes>
                            {{ comm.likes }}
                         </template>
                      </PostComment>
