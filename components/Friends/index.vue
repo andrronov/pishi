@@ -15,7 +15,7 @@
     </button>
   </div>
 
-  <div v-if="currentTab == 0">
+  <div v-if="currentTab == 0" class="flex flex-col">
     <div v-if="followers">
       <div class="flex flex-col">
         <FriendsList v-for="(follower, index) in followers" :key="index">
@@ -50,10 +50,10 @@
         </h1>
       </div>
     </div>
+    <UISpinner v-if="loads.followersLoad" class="self-center mt-5" />
   </div>
-  <UISpinner v-if="loads.followersLoad" class="self-center mt-5" />
   
-  <div v-if="currentTab == 1">
+  <div v-if="currentTab == 1" class="flex flex-col">
     <div v-if="following">
       <div class="flex flex-col">
         <FriendsList v-for="(following, index) in following" :key="index">
@@ -88,8 +88,8 @@
         </h1>
       </div>
     </div>
+    <UISpinner v-if="loads.followingsLoad" class="self-center mt-5" />
   </div>
-  <UISpinner v-if="loads.followingsLoad" class="self-center mt-5" />
 
 </template>
 
@@ -118,18 +118,30 @@ async function fetchFollowers() {
   loads.followersLoad = true;
   const followersRes = await supabase
     .from("followers")
-    .select("*, profiles(*)")
-    .eq("followed_user_id", userId);
+    .select("who_followed, profiles:who_followed(*)")
+    .eq('whos_following', userId);
   if (!followersRes.error) {
-    console.log("followers data", followersRes.data);
     followers.value = followersRes.data;
     loads.followersLoad = false;
   }
   console.log(followersRes);
 }
 
+// FETCH FOLLOWING
+async function fetchFollowings(){
+  loads.followingsLoad = true
+  const followingRes = await supabase
+  .from('followers')
+  .select('whos_following, profiles:whos_following(*)')
+  .eq('who_followed', userId)
+  if(!followingRes.error){
+    following.value = followingRes.data
+    loads.followingsLoad = false
+  }
+}
+
 watchEffect(() => {
   fetchFollowers();
-  // fetchFollowings()
+  fetchFollowings()
 });
 </script>
