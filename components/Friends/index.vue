@@ -18,7 +18,7 @@
   <div v-if="currentTab == 0" class="flex flex-col">
     <div v-if="followers">
       <div class="flex flex-col">
-        <FriendsList v-for="(follower, index) in followers" :key="index">
+        <FriendsList v-for="(follower, index) in followers" :key="index" @click="toProfile(follower.profiles.id)">
           <template #avatar>
             <img
               :src="follower.profiles.avatar"
@@ -56,7 +56,7 @@
   <div v-if="currentTab == 1" class="flex flex-col">
     <div v-if="following">
       <div class="flex flex-col">
-        <FriendsList v-for="(following, index) in following" :key="index">
+        <FriendsList v-for="(following, index) in following" :key="index" @click="toProfile(following.profiles.id)">
           <template #avatar>
             <img
               :src="following.profiles.avatar"
@@ -138,6 +138,12 @@ async function fetchFollowings(){
     following.value = followingRes.data
     loads.followingsLoad = false
   }
+}
+
+// GO TO PROFILE
+function toProfile(profileId){
+  console.log(profileId);
+  navigateTo(`/profile/${profileId}`)
 }
 
 watchEffect(() => {

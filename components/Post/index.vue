@@ -20,12 +20,11 @@
          <slot name="commentsButton"></slot>
          <slot name="shareButton"></slot>
       </div>
-      <slot name="commentSection"></slot>
+         <slot name="commentSection"></slot>
    </div>
 </template>
 
 <script setup>
-
 </script>
 
 <style>

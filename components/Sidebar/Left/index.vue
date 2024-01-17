@@ -57,7 +57,7 @@
 
      <div class="flex flex-row items-center justify-center px-2 py-2 mx-auto mt-auto mb-5 cursor-pointer w-14 xl:w-full hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
 
-            <div v-if="user" class="flex flex-row">
+            <div v-if="user" @click="toUserProfile" class="flex flex-row">
                 <img :src="user.avatar" class="w-10 h-10">
                 <div class="flex-col ml-2">
                     <h1 v-if="user" class="text-sm hidden sm:block font-bold text-gray-300 dark:text-gray-800">
@@ -86,11 +86,12 @@ const supabase = useSupabaseClient()
 const session = await supabase.auth.getSession();
 const route = useRoute()
 const user = ref(null)
+const userID = session.data.session.user.id;
+// ------------------------
 
 
 // STORE USER DATA
 const { data, pending, error, refresh } = await useAsyncData("", () => {
-   const userID = session.data.session.user.id;
    console.log('uId ', userID);
    supabase
    .from("profiles").select().eq("id", userID)
@@ -101,11 +102,16 @@ const { data, pending, error, refresh } = await useAsyncData("", () => {
    });
 });
 
-
+// LOG OUT
  async function logOutUser(){
   await supabase.auth.signOut()
   navigateTo('/login')
  }
+
+//  TO USER PROFILE
+function toUserProfile(){
+  navigateTo(`/profile/${userID}`)
+}
 
 watchEffect(() => {
 user.value = useGetUserStore()
