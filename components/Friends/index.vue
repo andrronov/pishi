@@ -116,28 +116,15 @@ const loads = reactive({
 // FETCH FOLLOWERS
 async function fetchFollowers() {
   loads.followersLoad = true;
-  const followersRes = await supabase
-    .from("followers")
-    .select("who_followed, profiles:who_followed(*)")
-    .eq('whos_following', userId);
-  if (!followersRes.error) {
-    followers.value = followersRes.data;
-    loads.followersLoad = false;
-  }
-  console.log(followersRes);
+  followers.value = await useFetchFollowers(supabase, userId)
+  loads.followersLoad = false;
 }
 
 // FETCH FOLLOWING
 async function fetchFollowings(){
   loads.followingsLoad = true
-  const followingRes = await supabase
-  .from('followers')
-  .select('whos_following, profiles:whos_following(*)')
-  .eq('who_followed', userId)
-  if(!followingRes.error){
-    following.value = followingRes.data
-    loads.followingsLoad = false
-  }
+  following.value = await useFetchFollowings(supabase, userId)
+  if(following.value){loads.followingsLoad = false}
 }
 
 // GO TO PROFILE

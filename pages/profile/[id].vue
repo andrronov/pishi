@@ -6,16 +6,17 @@
         <h1 class="text-base xs:text-xl text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
         <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
       </div>
-      <div class="hidden xs:flex flex-row my-4 self-center gap-4">
+      <div v-if="userFollowers && userFollowings" class="hidden xs:flex flex-row my-4 self-center gap-4">
         <div class="flex flex-col items-center">
           <p>Subs</p>
-          <p>145</p>
+          <p>{{ userFollowers.length }}</p>
         </div>
         <div class="flex flex-col items-center">
           <p>Subscripts</p>
-          <p>145</p>
+          <p>{{ userFollowings.length }}</p>
         </div>
       </div>
+      <UISpinner v-else />
     </div>
     <div class="xs:hidden flex flex-row my-4 self-center gap-4">
       <div class="flex flex-col items-center">
@@ -30,7 +31,7 @@
     <div class="flex flex-row items-center justify-between mt-4">
       <div class="flex flex-row items-center gap-2">
         <NuxtIcon name="info"></NuxtIcon>
-        <p>Infinity to beyond</p>
+        <p>{{ user[0].profile_status }}</p>
       </div>
       <div class="shrink-0 flex flex-col items-end">
         <p v-if="false" class="mt-1 text-sm leading-5 text-gray-500">
@@ -53,6 +54,7 @@
          <button>Message</button>
       </div>
    </div>
+   <button v-if="isMyProfile" @click="profileModal = true" class="p-3 bg-white dark:bg-black text-black dark:text-white mt-1 hover:bg-gray-500" :class="defaultTransition">Change profile</button>
 
    <!-- posts -->
    <div v-if="userPosts">
@@ -134,6 +136,8 @@
 
 
   <h2 v-if="user?.error">{{ user?.log?.message }}</h2>
+
+  <ChangeProfile :modal-open="profileModal" @close-modal="profileModal = false" />
 </template>
 
 <script setup>
@@ -150,16 +154,29 @@ const loads = reactive({
 })
 const user = ref(null)
 const userPosts = ref(null)
+const userFollowings = ref(null)
+const userFollowers = ref(null)
 const commentText = ref('')
 const route = useRoute()
 const store = useUserStore()
 const supabase = useSupabaseClient()
+const session = await supabase.auth.getSession();
+const userId = session.data.session.user.id;
 const postComments = reactive({})
 const openComments = reactive({})
 const errorLog = ref(null)
+const isMyProfile = ref(false)
+const profileModal = ref(false)
 // -------------------
 
+// Check is my profile
+function checkIsMyProfile(){
+  if(route.params.id === store.getUser().id){
+    isMyProfile.value = true
+  }
+}
 
+// FETCH USER DATA
 async function fetchUser(){
   const userRes = await supabase.from('profiles').select().eq('id', route.params.id)
   if(!userRes.error){
@@ -201,11 +218,23 @@ function toUser(userId){
    navigateTo(`/profile/${userId}`)
 }
 
+// FETCH USER FOLLOWINGS COUNT
+async function fetchFollowings(){
+  userFollowings.value = await useFetchFollowings(supabase, route.params.id)
+}
+// FETCH FOLLOWERS
+async function fetchFollowers() {
+  userFollowers.value = await useFetchFollowers(supabase, route.params.id)
+}
+
 onMounted(() => {
   fetchUser()
 })
 watchEffect(() => {
+  checkIsMyProfile()
   fetchUserPosts()
+  fetchFollowings()
+  fetchFollowers()
 })
 </script>
 
