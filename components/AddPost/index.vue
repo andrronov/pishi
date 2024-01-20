@@ -33,11 +33,15 @@
                            </div>
                  
                            <div class="col-span-full">
-                             <label for="photo" class="block text-sm sm:text-xl font-medium leading-6 ">Photo</label>
-                             <div class="mt-2 flex items-center gap-x-3">
-                               <NuxtIcon name="user-circle" />
-                               <button type="button" class=" bg-white px-2.5 py-1.5 text-sm sm:text-base shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Change</button>
-                             </div>
+                             <label @change="addPhoto" for="photo" class="block text-sm sm:text-xl font-medium leading-6 ">
+                              Photo
+                              <div class="flex flex-col gap-x-3">
+                                <input class="my-4 text-transparent cursor-pointer" type="file" />
+                                <UISpinner class="my-4" v-if="imgLoad" />
+                                <img v-if="postPhoto" :src="postPhoto" class="my-4" alt="photo preview">
+                              </div>
+                              <button @click="postPhoto = null" type="button" class=" bg-white px-2.5 py-1.5 text-sm sm:text-base shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Delete</button>
+                             </label>
                            </div>
                          </div>
                        </div>
@@ -77,14 +81,13 @@
  const supabase = useSupabaseClient()
  const session = await supabase.auth.getSession()
 
-function aaa(){
-   console.log('aaa');
-}
  const loading = ref(false)
+ const imgLoad = ref(false)
  const success = ref(false)
  const error = ref(null)
  const postTitle = ref('')
  const postText = ref('')
+ const postPhoto = ref(null)
 //  const POST_IMAGE   !!!
 
  function createPost(){
@@ -93,7 +96,8 @@ function aaa(){
    supabase.from('posts').insert({
       author: session.data.session.user.id,
       title: postTitle.value,
-      text: postText.value
+      text: postText.value,
+      img: postPhoto.value
    }).then(res => {
       if(!res.error){
          postTitle.value = ''
@@ -115,4 +119,19 @@ function aaa(){
       }
    })
  }
+
+async function addPhoto(ev){
+  imgLoad.value = true
+  const photo = ev.target.files[0]
+  const newPhotoName = Date.now() + photo.name
+  const {data, error} = await supabase.storage.from('post_photos').upload(newPhotoName, photo)
+  console.log(data);
+  console.log(error);
+  if(!error){
+    postPhoto.value = 'https://ilabflsecnunffcornxh.supabase.co/storage/v1/object/public/post_photos/' + data.path
+  }
+  if(postPhoto.value){
+    imgLoad.value = false
+  }
+}
  </script>

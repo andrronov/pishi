@@ -95,6 +95,11 @@
    // avatar: ''
  })
 
+function loadUserData(){
+  const {name, surname, profile_status} = useGetUserStore()
+  modal = {name, surname, status: profile_status}
+}
+
 async function changeProfile(){
    loading.value = true
    const changeRes = await supabase.from('profiles')
@@ -114,4 +119,8 @@ async function changeProfile(){
       throw new Error(changeRes.error) 
    }
  }
+
+ watchEffect(() => {
+  loadUserData()
+ })
 </script>

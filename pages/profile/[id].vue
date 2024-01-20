@@ -46,7 +46,7 @@
       </div>
     </div>
     <div class="h-0.5 my-4 bg-white dark:bg-black w-full"></div>
-    <div class="flex flex-row w-full items-center text-white dark:text-black">
+    <div v-if="!isMyProfile" class="flex flex-row w-full items-center text-white dark:text-black">
       <div :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
          <button>Subscribe</button>
       </div>
@@ -59,7 +59,7 @@
    <!-- posts -->
    <div v-if="userPosts">
       <div v-for="(post, index) in userPosts" :key="index">
-        <Post>
+        <Post @delete="deletePost(post.id)">
           <template #postData>
             <div class="flex flex-row items-center gap-4 cursor-pointer" @click="toUser(post.profiles.id)">
                <img :src="post.profiles.avatar" class="w-12 h-12" alt="avatar">
@@ -67,7 +67,6 @@
                   <p class="font-medium">
                      @{{ post.profiles.id }}</p>
                   <p class="text-sm text-white/50 dark:text-black/50 font-light">
-                     <!-- {{ post.created_at }}</p> -->
                      {{ formatTimeAgo(new Date(post.created_at)) }}</p>
                </div>
             </div>
@@ -81,7 +80,7 @@
               <p>{{ post.text }}</p>
           </template>
           <template #postImage>
-              <img src="/football.jpg" alt="">
+              <img :src="post.img" alt="">
           </template>
           <template #postLikes v-if="post.post_likes">
             <div v-if="!post.isLiked" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6">
@@ -181,7 +180,6 @@ async function fetchUser(){
   const userRes = await supabase.from('profiles').select().eq('id', route.params.id)
   if(!userRes.error){
     user.value = userRes.data
-    console.log(user.value);
   }
   else{
     user.value = {
@@ -225,6 +223,19 @@ async function fetchFollowings(){
 // FETCH FOLLOWERS
 async function fetchFollowers() {
   userFollowers.value = await useFetchFollowers(supabase, route.params.id)
+}
+
+// DELETE POST
+async function deletePost(postId){
+  const { error } = await supabase
+  .from('posts')
+  .delete()
+  .eq('id', postId)
+  if(!error){
+    fetchUserPosts()
+  } else{
+    console.log(error);
+  }
 }
 
 onMounted(() => {

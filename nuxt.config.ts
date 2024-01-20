@@ -10,7 +10,7 @@ export default defineNuxtConfig({
     '@nuxtjs/google-fonts',
     'nuxt-icons',
     '@nuxtjs/supabase',
-    '@pinia/nuxt'
+    '@pinia/nuxt',
   ],
   runtimeConfig: {
     

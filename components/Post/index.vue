@@ -1,10 +1,11 @@
 <template>
    <div class="flex flex-col w-full p-4 my-4 border-y-2 border-white dark:border-black bg-gray-800 text-white dark:bg-gray-200 dark:text-black" id="wrapper">
-      <div class="flex w-full flex-row justify-between items-center mb-6">
+      <div class="flex w-full flex-row justify-between relative items-center mb-6">
          <div class="flex flex-row items-center gap-4">
             <slot name="postData"></slot>
          </div>
-         <NuxtIcon name="threepoints" class="justify-self-end" />
+         <NuxtIcon name="threepoints" @click="showPostMenu = true" class="justify-self-end cursor-pointer" />
+         <PostMenu v-if="showPostMenu" :show="showPostMenu" @delete="deletePost()" @close-modal="showPostMenu = false" />
       </div>
       <div class="mb-4">
       <slot name="postTitle"></slot>
@@ -25,6 +26,18 @@
 </template>
 
 <script setup>
+const emits = defineEmits({
+   delete(){}
+})
+const props = defineProps({
+   showPostMenu: {
+      type: Boolean,
+      default: false
+   }
+})
+function deletePost(){
+   emits('delete')
+}
 </script>
 
 <style>

@@ -27,9 +27,9 @@
                  <template #postText>
                     <p>{{ post.text }}</p>
                  </template>
-                 <template #postImage>
-                    <img src="/football.jpg" alt="">
-                 </template>
+                 <template v-if="post.img" #postImage>
+                    <img :src="post.img" alt="post img">
+                  </template>
   
                  <!-- POST INTERFACE -->
   
