@@ -42,12 +42,15 @@
                            </div>
                  
                            <div class="col-span-full">
-                             <label for="photo" class="block text-sm sm:text-xl font-medium leading-6 ">Upload avatar</label>
-                             <div class="mt-2 flex items-center gap-x-3">
-                               <NuxtIcon name="user-circle" />
-                               <button type="button" class=" bg-white px-2.5 py-1.5 text-sm sm:text-base shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Change</button>
+                            <label for="photo" class="block text-sm sm:text-xl font-medium leading-6 ">
+                             Change avatar
+                             <div class="flex flex-col gap-x-3">
+                               <input @change="changeAvatar" class="my-4 text-transparent cursor-pointer" type="file" />
+                               <UISpinner class="my-4" v-if="imgLoad" />
+                               <img v-if="modal.avatar" :src="modal.avatar" class="my-4" alt="avatar preview">
                              </div>
-                           </div>
+                            </label>
+                          </div>
                          </div>
                        </div>
                        
@@ -88,22 +91,24 @@
  const loading = ref(false)
  const success = ref(false)
  const error = ref(null)
+ const imgLoad = ref(false)
+
  let modal = reactive({
    name: '',
    surname: '',
    status: '',
-   // avatar: ''
+   avatar: null
  })
 
 function loadUserData(){
-  const {name, surname, profile_status} = useGetUserStore()
-  modal = {name, surname, status: profile_status}
+  const {name, surname, profile_status, avatar} = useGetUserStore()
+  modal = {name, surname, status: profile_status, avatar}
 }
 
 async function changeProfile(){
    loading.value = true
    const changeRes = await supabase.from('profiles')
-      .update({name: modal.name, surname: modal.surname, profile_status: modal.status})
+      .update({name: modal.name, surname: modal.surname, profile_status: modal.status, avatar: modal.avatar})
       .eq('id', session.data.session.user.id)
    if(!changeRes.error){
       loading.value = false
@@ -112,13 +117,30 @@ async function changeProfile(){
          modal = null
          success.value = false
          emit('closeModal')
-      }, 2500);
+         refreshNuxtData()
+      }, 1500);
    }
    else{
       error.value = true
       throw new Error(changeRes.error) 
    }
  }
+
+ async function changeAvatar(ev){
+  imgLoad.value = true
+  modal.avatar = null
+  const photo = ev.target.files[0]
+  const newPhotoName = Date.now() + photo.name
+  const {data, error} = await supabase.storage.from('avatars').upload(newPhotoName, photo)
+  console.log(data);
+  console.log(error);
+  if(!error){
+    modal.avatar = 'https://ilabflsecnunffcornxh.supabase.co/storage/v1/object/public/avatars/' + data.path
+  }
+  if(modal.avatar){
+    imgLoad.value = false
+  }
+}
 
  watchEffect(() => {
   loadUserData()

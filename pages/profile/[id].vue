@@ -1,7 +1,7 @@
 <template>
   <div v-if="user" class="flex flex-col border-x-2 border-white dark:border-black px-2">
     <div class="flex flex-row w-full justify-between items-center">
-      <img :src="user[0].avatar" alt="avatar" class="h-20 w-20 xs:h-32 xs:w-32 ">
+      <img @click="openImg(user[0].avatar)" :src="user[0].avatar" alt="avatar" class="h-20 w-20 xs:h-32 xs:w-32 cursor-pointer">
       <div class="flex flex-col items-end xs:items-center gap-2">
         <h1 class="text-base xs:text-xl text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
         <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
@@ -46,20 +46,25 @@
       </div>
     </div>
     <div class="h-0.5 my-4 bg-white dark:bg-black w-full"></div>
+
     <div v-if="!isMyProfile" class="flex flex-row w-full items-center text-white dark:text-black">
-      <div :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
-         <button>Subscribe</button>
+      <div v-if="!isSubed" :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
+         <button @click="subUser(user[0].id)">Subscribe</button>
+      </div>
+      <div v-if="isSubed" :class="defaultTransition" class="p-3 bg-white text-black dark:bg-black dark:text-white flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
+         <button @click="unSubUser(user[0].id)">Subscribed</button>
       </div>
       <div :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
          <button>Message</button>
       </div>
    </div>
+
    <button v-if="isMyProfile" @click="profileModal = true" class="p-3 bg-white dark:bg-black text-black dark:text-white mt-1 hover:bg-gray-500" :class="defaultTransition">Change profile</button>
 
    <!-- posts -->
    <div v-if="userPosts">
       <div v-for="(post, index) in userPosts" :key="index">
-        <Post @delete="deletePost(post.id)">
+        <Post @delete="deletePost(post.id)" :isMyPage="isMyProfile">
           <template #postData>
             <div class="flex flex-row items-center gap-4 cursor-pointer" @click="toUser(post.profiles.id)">
                <img :src="post.profiles.avatar" class="w-12 h-12" alt="avatar">
@@ -80,14 +85,14 @@
               <p>{{ post.text }}</p>
           </template>
           <template #postImage>
-              <img :src="post.img" alt="">
+              <img @click="openImg(post.img)" :src="post.img" alt="">
           </template>
           <template #postLikes v-if="post.post_likes">
-            <div v-if="!post.isLiked" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6">
-               <NuxtIcon @click="likePost(post.id)" name="like" class="" />
+            <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
+               <NuxtIcon name="like" class="" />
                <p class="text-xs">{{ post.post_likes.length }}</p>
             </div>
-            <div v-if="post.isLiked" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
+            <div v-if="post.post_likes.find(islike)" @click="unlikePost(post.id)" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
                <NuxtIcon name="like" class="" />
                <p class="text-xs">{{ post.post_likes.length }}</p>
             </div>
@@ -131,6 +136,9 @@
     </div>
     </div>
     <UISpinner v-if="!userPosts" class="self-center w-full mt-4" />
+
+    <Photo :show="openPhoto" :photo="photoView" @close-modal="openPhoto = false" />
+
   </div>
 
 
@@ -160,13 +168,16 @@ const route = useRoute()
 const store = useUserStore()
 const supabase = useSupabaseClient()
 const session = await supabase.auth.getSession();
-const userId = session.data.session.user.id;
+const sessionUserId = session.data.session.user.id;
 const postComments = reactive({})
 const openComments = reactive({})
 const errorLog = ref(null)
 const isMyProfile = ref(false)
 const profileModal = ref(false)
-// -------------------
+const openPhoto = ref(false)
+const photoView = ref(null)
+const isSubed = ref(null)
+// ------------------------------------
 
 // Check is my profile
 function checkIsMyProfile(){
@@ -194,6 +205,7 @@ async function fetchUser(){
 async function fetchUserPosts(){
   if(user.value){
     userPosts.value = await useFetchUserPosts(supabase, route.params.id)
+    console.log(userPosts.value);
   }
 }
 // FETCH POST COMMENTS
@@ -209,10 +221,21 @@ async function postComment(postId){
    if(commsRes == "true"){commentText.value = ''; fetchPostsComments(postId); openComments[postId] = true; console.log(commsRes);} 
    else{ console.log(commsRes); errorLog.value = commsRes.message }
 }
+// DELETE POST (dont work for now)
+async function deletePost(postId){
+  const { error } = await supabase
+  .from('posts')
+  .delete()
+  .eq('id', postId)
+  if(!error){
+    fetchUserPosts()
+  } else{
+    console.log(error);
+  }
+}
 
 // GO TO USER PROFILE
 function toUser(userId){
-  console.log(userId);
    navigateTo(`/profile/${userId}`)
 }
 
@@ -222,18 +245,58 @@ async function fetchFollowings(){
 }
 // FETCH FOLLOWERS
 async function fetchFollowers() {
+  function isFollowed(element) {
+  return element.who_followed == sessionUserId
+}
   userFollowers.value = await useFetchFollowers(supabase, route.params.id)
+  isSubed.value = userFollowers.value.find(isFollowed)
+}
+// FIND IF LIKED
+function islike(el){
+  return el.user_id == sessionUserId
+}
+// OPEN PHOTO
+function openImg(img){
+  openPhoto.value = true
+  photoView.value = img
 }
 
-// DELETE POST
-async function deletePost(postId){
-  const { error } = await supabase
-  .from('posts')
-  .delete()
-  .eq('id', postId)
+// SUBSCRIBE & UNSUB USER
+async function subUser(userId){
+  const {data, error} = await supabase.from('followers').insert({who_followed: sessionUserId, whos_following: userId})
+  if(!error){
+    isSubed.value = true
+  } else {
+    errorLog.value = error
+    throw new Error(error)
+  }
+  fetchFollowers()
+}
+async function unSubUser(userId){
+  const {data, error} = await supabase.from('followers').delete().eq('who_followed', sessionUserId, 'whos_following', userId)
+  if(!error){
+    isSubed.value = false
+  } else {
+    errorLog.value = error
+    throw new Error(error)
+  }
+  fetchFollowers()
+}
+
+// LIKE/UNLIKE POST
+async function likePost(postId){
+  const {data, error} = await supabase.from('post_likes').insert({post_id: postId, user_id: sessionUserId})
   if(!error){
     fetchUserPosts()
-  } else{
+  } else {
+    console.log(error);
+  }
+}
+async function unlikePost(postId){
+  const {data, error} = await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', sessionUserId)
+  if(!error){
+    fetchUserPosts()
+  } else {
     console.log(error);
   }
 }

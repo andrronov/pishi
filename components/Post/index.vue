@@ -5,7 +5,7 @@
             <slot name="postData"></slot>
          </div>
          <NuxtIcon name="threepoints" @click="showPostMenu = true" class="justify-self-end cursor-pointer" />
-         <PostMenu v-if="showPostMenu" :show="showPostMenu" @delete="deletePost()" @close-modal="showPostMenu = false" />
+         <PostMenu v-if="showPostMenu" :isMyPage="isMyPage" :show="showPostMenu" @delete="deletePost()" @close-modal="showPostMenu = false" />
       </div>
       <div class="mb-4">
       <slot name="postTitle"></slot>
@@ -31,6 +31,10 @@ const emits = defineEmits({
 })
 const props = defineProps({
    showPostMenu: {
+      type: Boolean,
+      default: false
+   },
+   isMyPage: {
       type: Boolean,
       default: false
    }

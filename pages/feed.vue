@@ -14,7 +14,6 @@
                            <p class="font-medium">
                               @{{ post.profiles.id }}</p>
                            <p class="text-sm text-white/50 dark:text-black/50 font-light">
-                              <!-- {{ post.created_at }}</p> -->
                               {{ formatTimeAgo(new Date(post.created_at)) }}</p>
                         </div>
                      </div>
@@ -28,26 +27,22 @@
                     <p>{{ post.text }}</p>
                  </template>
                  <template v-if="post.img" #postImage>
-                    <img :src="post.img" alt="post img">
+                    <img @click="openImg(post.img)" :src="post.img" alt="post img">
                   </template>
   
                  <!-- POST INTERFACE -->
   
                  <template #postLikes v-if="post.post_likes">
-                    <div v-if="!post.isLiked" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6">
-                       <NuxtIcon @click="likePost(post.id)" name="like" class="" />
-                       <p class="text-xs">{{ post.post_likes.length }}</p>
-                    </div>
-                    <div v-if="post.isLiked" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
-                       <NuxtIcon name="like" class="" />
-                       <p class="text-xs">{{ post.post_likes.length }}</p>
-                    </div>
-                    
-                    <!-- <div class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
-                    <NuxtIcon @click="likePost(post.id)" v-model="post.isLiked" name="like" :class="post.isLiked ? 'text-green-500' : 'text-red-500' "  />
-                       <p class="text-xs">{{ post.post_likes.length }}</p>
-                    </div> -->
-                 </template>
+                  <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
+                     <NuxtIcon name="like" class="" />
+                     <p class="text-xs">{{ post.post_likes.length }}</p>
+                  </div>
+                  <div v-if="post.post_likes.find(islike)" @click="unlikePost(post.id)" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
+                     <NuxtIcon name="like" class="" />
+                     <p class="text-xs">{{ post.post_likes.length }}</p>
+                  </div>
+               </template>
+
                  <template #commentsButton>
                     <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" :class="defaultButton" class="p-1 scale-150 mr-5" />
                  </template>
@@ -83,6 +78,7 @@
                  </template>
                  </Post>
            </div>
+           <Photo :show="openPhoto" :photo="photoView" @close-modal="openPhoto = false" />
         </div>
         <h3 v-else>Error: {{ errorLog }}</h3>
         <p v-if="posts.length < 1" class="text-white text-center dark:text-black">Create your first post!</p>
@@ -111,8 +107,8 @@ let postComments = reactive({})
 const openComments = reactive({})
 const commentText = ref('')
 
-let likes = reactive({})
-const isLiked = ref(false)
+const openPhoto = ref(false)
+const photoView = ref(null)
 
 const supabase = useSupabaseClient();
 const session = await supabase.auth.getSession();
@@ -139,11 +135,6 @@ async function fetchPosts(){
    const postsResponse = await supabase.from('posts').select('id, title, created_at, text, img, profiles(id, avatar, name, surname), post_likes(id, post_id, user_id, created_at)').order('created_at', {ascending: false})
    if(!postsResponse.error){
       posts = postsResponse.data
-      console.log('psts', posts);
-      // check if liked
-      posts.forEach(post => {
-         post.post_likes.forEach(el => post.isLiked = (el.user_id == store.getUser().id))
-      })
       loads.loadPosts = false
    } else {
       errorLog.value = postsResponse.error
@@ -168,19 +159,42 @@ async function postComment(postId){
    else{ console.log(commsRes); errorLog.value = commsRes.message }
 }
 
-// FETCH LIKES
-async function fetchLikes(){}
-
-// LIKE A POST
-async function likePost(postId){}
+// FIND IF LIKED
+function islike(el){
+  return el.user_id == session.data.session.user.id
+}
+// LIKE/UNLIKE POST
+async function likePost(postId){
+  const {data, error} = await supabase.from('post_likes').insert({post_id: postId, user_id: session.data.session.user.id})
+  if(!error){
+    fetchPosts()
+  } else {
+    console.log(error);
+  }
+}
+async function unlikePost(postId){
+  const {data, error} = await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', session.data.session.user.id)
+  if(!error){
+    fetchPosts()
+  } else {
+    console.log(error);
+  }
+}
 
 // GO TO USER PROFILE
 function toUser(userId){
    navigateTo(`/profile/${userId}`)
 }
 
+// OPEN PHOTO
+function openImg(img){
+  openPhoto.value = true
+  photoView.value = img
+}
+
 // LOAD POSTS
 onMounted(() => {
    fetchPosts()
+   console.log(posts);
 })
 </script>
