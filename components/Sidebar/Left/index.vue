@@ -29,7 +29,7 @@
            Messages
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab :link="'/friends'" :active="route.name == 'friends'">
+       <SidebarLeftTab :link="`/friends/${userID}`" :active="route.name == 'friends'">
          <template v-slot:icon>
            <nuxt-icon name="user-group"></nuxt-icon>
          </template>

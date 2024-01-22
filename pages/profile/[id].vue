@@ -1,12 +1,12 @@
 <template>
-  <div v-if="user" class="flex flex-col border-x-2 border-white dark:border-black px-2">
+  <div v-if="user" class="flex flex-col flex-wrap border-x-2 pt-4 border-white dark:border-black px-2">
     <div class="flex flex-row w-full justify-between items-center">
-      <img @click="openImg(user[0].avatar)" :src="user[0].avatar" alt="avatar" class="h-20 w-20 xs:h-32 xs:w-32 cursor-pointer">
-      <div class="flex flex-col items-end xs:items-center gap-2">
+      <img @click="openImg(user[0].avatar)" :src="user[0].avatar" alt="avatar" class="h-28 w-28 xs:h-32 xs:w-32 cursor-pointer">
+      <div class="hidden xs:flex flex-col items-end xs:items-center gap-2">
         <h1 class="text-base xs:text-xl text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
         <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
       </div>
-      <div v-if="userFollowers && userFollowings" class="hidden xs:flex flex-row my-4 self-center gap-4">
+      <div @click="navigateTo(`/friends/${user[0].id}`)" v-if="userFollowers && userFollowings" class="flex flex-row my-4 cursor-pointer self-center gap-4">
         <div class="flex flex-col items-center">
           <p>Subs</p>
           <p>{{ userFollowers.length }}</p>
@@ -18,18 +18,12 @@
       </div>
       <UISpinner v-else />
     </div>
-    <div class="xs:hidden flex flex-row my-4 self-center gap-4">
-      <div class="flex flex-col items-center">
-        <p>Subs</p>
-        <p>145</p>
-      </div>
-      <div class="flex flex-col items-center">
-        <p>Subscripts</p>
-        <p>145</p>
-      </div>
+    <div class="xs:hidden my-4 flex flex-col items-start self-center gap-2">
+      <h1 class="text-base xs:text-xl self-center text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
+      <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
     </div>
     <div class="flex flex-row items-center justify-between mt-4">
-      <div class="flex flex-row items-center gap-2">
+      <div class="flex flex-row items-center gap-2 my-2">
         <NuxtIcon name="info"></NuxtIcon>
         <p>{{ user[0].profile_status }}</p>
       </div>
@@ -45,6 +39,7 @@
         </div>
       </div>
     </div>
+
     <div class="h-0.5 my-4 bg-white dark:bg-black w-full"></div>
 
     <div v-if="!isMyProfile" class="flex flex-row w-full items-center text-white dark:text-black">

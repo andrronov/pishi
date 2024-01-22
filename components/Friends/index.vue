@@ -46,7 +46,7 @@
           </template>
         </FriendsList>
         <h1 v-if="followers.length < 1" class="text-white dark:text-black mt-5">
-          You don't have followers :(
+          Don't have followers
         </h1>
       </div>
     </div>
@@ -84,7 +84,7 @@
           </template>
         </FriendsList>
         <h1 v-if="following.length < 1" class="text-white dark:text-black mt-5">
-          You don't have followers :(
+          Don't have followers
         </h1>
       </div>
     </div>
@@ -99,6 +99,9 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  USERID: {
+    type: String,
+  }
 });
 // VARIABLES
 const tabs = ref(["Followers", "Following"]);
@@ -116,14 +119,14 @@ const loads = reactive({
 // FETCH FOLLOWERS
 async function fetchFollowers() {
   loads.followersLoad = true;
-  followers.value = await useFetchFollowers(supabase, userId)
+  followers.value = await useFetchFollowers(supabase, props.USERID)
   loads.followersLoad = false;
 }
 
 // FETCH FOLLOWING
 async function fetchFollowings(){
   loads.followingsLoad = true
-  following.value = await useFetchFollowings(supabase, userId)
+  following.value = await useFetchFollowings(supabase, props.USERID)
   if(following.value){loads.followingsLoad = false}
 }
 

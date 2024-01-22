@@ -1,7 +1,8 @@
 export default async function(supabase, postId) {
-   const commsResponse = await supabase.from('post_comments').select('*, profiles(*)').eq('post', postId)
-      if(!commsResponse.error){
-         return commsResponse.data
+   const {data, error} = await supabase.from('post_comments').select('*, profiles(id, avatar, name, surname)').eq('post', postId)
+      if(!error){
+         console.log('comms', data);
+         return data
       } else{
          return error
       }
