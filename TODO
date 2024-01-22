@@ -6,6 +6,27 @@
 
 3. Доработать систему лайков (они ставятся, но стабильно не отображаются) + сделать адекватный фетчинг после проставки лайка
 4. сделать закрытие модалок и прочего по нажатию снаружи
-5. по нажатию на подписчиков и подписок выводить модалку со списками
 6. вынести в отдельный компонент пост
 7. делать\не делать лайки на комменты
+8. сделать адекватную подборку постов на основе подписок
+
+
+
+
+async function fetchPosts(){
+   loads.loadPosts = true
+   const {data, error} = await supabase.from('followers')
+      .select('whos_following(*), profiles:whos_following(*), profiles:whos_following(*)')
+      .eq('who_followed', session.data.session.user.id)
+      // .order('created_at', {ascending: false})
+   if(!error){
+      posts = data
+      console.log(data);
+      loads.loadPosts = false
+   } else {
+      errorLog.value = error
+      loads.loadPosts = false
+      console.log(error);
+      throw Error(error)
+   }
+}

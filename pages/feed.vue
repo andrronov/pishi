@@ -1,7 +1,7 @@
 <template>
    <div>
       <MainSection @reload-posts="fetchPosts" :loading="loads.loadPosts">
-        <div v-if="posts">
+        <div v-if="posts" ref="el">
   
            <!-- POST CONTENT -->
   
@@ -88,6 +88,8 @@
 
 <script setup>
 import { formatTimeAgo } from '@vueuse/core'
+import { useInfiniteScroll } from '@vueuse/core';
+
 const {defaultButton, defaultTransition} = useTailwindConfig()
 
 definePageMeta({
@@ -113,6 +115,9 @@ const photoView = ref(null)
 const supabase = useSupabaseClient();
 const session = await supabase.auth.getSession();
 const store = useUserStore();
+
+let minRange = ref(0)
+let maxRange = ref(3)
 // ---------------------
 
 
@@ -129,10 +134,20 @@ const { data, pending, error, refresh } = await useAsyncData("", () => {
    });
 });
 
+const el = ref(null)
+useInfiniteScroll(el, () => {
+   fetchPosts()
+   minRange.value += 2
+   maxRange.value += 2
+   console.log('load, values', minRange.value, maxRange.value);
+})
 // FETCH POSTS
 async function fetchPosts(){
    loads.loadPosts = true
-   const postsResponse = await supabase.from('posts').select('id, title, created_at, text, img, profiles(id, avatar, name, surname), post_likes(id, post_id, user_id, created_at)').order('created_at', {ascending: false})
+   const postsResponse = await supabase.from('posts')
+      .select('*, profiles(id, avatar, name, surname), post_likes(id, post_id, user_id, created_at)')
+      .order('created_at', {ascending: false})
+      .range(minRange.value, maxRange.value)
    if(!postsResponse.error){
       posts = postsResponse.data
       loads.loadPosts = false
