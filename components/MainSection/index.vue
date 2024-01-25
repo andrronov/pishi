@@ -3,10 +3,7 @@
       <!-- <div class="sticky top-0 px-4 bg-white/80 backdrop-blur-md py-3 dark:bg-red-500/80">
          <h2 class="text-lg font-semibold text-gray-600">Whats new /поменяй потом на добавление публикации/</h2>
       </div> -->
-      <div v-if="loading" class="flex items-center justify-center p-4 border-b">
-         <UISpinner />
-      </div>
-      <div v-else>
+      <div>
          <div class="flex flex-row w-full items-center text-white dark:text-black">
             <div :class="defaultTransition" @click="modalOpen = true" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
                <NuxtIcon name="post" />

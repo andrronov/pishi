@@ -21,7 +21,9 @@
          <slot name="commentsButton"></slot>
          <slot name="shareButton"></slot>
       </div>
+      <div class="mt-4 overflow-y-scroll max-h-56">
          <slot name="commentSection"></slot>
+      </div>
    </div>
 </template>
 

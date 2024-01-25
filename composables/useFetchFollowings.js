@@ -1,11 +1,11 @@
 export default (async(supabase, userId) => {
-   const followingRes = await supabase
+   const {data, error} = await supabase
   .from('followers')
   .select('whos_following, profiles:whos_following(*)')
   .eq('who_followed', userId)
-  if(!followingRes.error){
-     return followingRes.data
+  if(!error){
+     return data
   } else{
-   throw new Error(followingRes.error)
+   throw new Error(error)
   }
 })

@@ -100,6 +100,10 @@
           </template> 
 
           <template v-if="openComments[post.id]" #commentSection>
+            <div class="flex flex-row items-center mt-5">
+              <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
+              <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
+           </div>
             <UISpinner class="self-center my-4" v-if="loads.loadComms" />
             <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition" :userAvatar="comm.avatar">
               <template #commentData>
@@ -121,12 +125,9 @@
                   </template>
                </PostComment>
                <p class="text-white bg-red-500 text-center my-2" v-if="errorLog">error, {{ errorLog }}</p>
-
-               <div class="flex flex-row items-center mt-5">
-                  <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
-                  <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
-               </div>
-         </template>
+               <button @click="fetchPostsComments(post.id)" class="p-2 mt-4">LOAD POSTS</button>
+               
+              </template>
         </Post>
     </div>
     </div>
@@ -172,6 +173,8 @@ const profileModal = ref(false)
 const openPhoto = ref(false)
 const photoView = ref(null)
 const isSubed = ref(null)
+const minRange = ref(0)
+const maxRange = ref(2)
 // ------------------------------------
 
 // Check is my profile
@@ -205,10 +208,20 @@ async function fetchUserPosts(){
 }
 // FETCH POST COMMENTS
 async function fetchPostsComments(postId){
+    console.log(minRange.value, maxRange.value);
+    // if(!postComments[postId]){
+      // postComments[postId] = []
+    // }
       loads.loadComms = true
       openComments[postId] = !openComments[postId]
-      postComments[postId] = await useFetchPostComments(supabase, postId)
+      // const comments = await useFetchPostComments(supabase, postId, minRange.value, maxRange.value)
+      postComments[postId] = await useFetchPostComments(supabase, postId, minRange, maxRange)
+      // postComments[postId].push(...comments)
+      console.log(postComments[postId]);
+      // minRange.value += 3
+      // maxRange.value += 3
       loads.loadComms = false
+      
 }
 // POST A COMMENT
 async function postComment(postId){
