@@ -21,7 +21,7 @@
            Notifications
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab :active="route.name == 'messages'">
+       <SidebarLeftTab :link="`/messages/${userID}`" :active="route.name == 'messages-id'">
          <template v-slot:icon>
            <nuxt-icon name="envelope"></nuxt-icon>
          </template>
@@ -29,7 +29,7 @@
            Messages
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab :link="`/friends/${userID}`" :active="route.name == 'friends'">
+       <SidebarLeftTab :link="`/friends/${userID}`" :active="route.name == 'friends-id'">
          <template v-slot:icon>
            <nuxt-icon name="user-group"></nuxt-icon>
          </template>
@@ -88,7 +88,7 @@ const route = useRoute()
 const user = ref(null)
 const userID = session.data.session.user.id;
 // ------------------------
-
+console.log(route);
 
 // STORE USER DATA
 const { data, pending, error, refresh } = await useAsyncData("", () => {

@@ -50,9 +50,10 @@
          <button @click="unSubUser(user[0].id)">Subscribed</button>
       </div>
       <div :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
-         <button>Message</button>
+         <button @click="toChatWithUser(user[0].id)">Message</button>
       </div>
    </div>
+   <UISpinner v-if="loads.chat" class="self-center my-4" />
 
    <button v-if="isMyProfile" @click="profileModal = true" class="p-3 bg-white dark:bg-black text-black dark:text-white mt-1 hover:bg-gray-500" :class="defaultTransition">Change profile</button>
 
@@ -153,7 +154,8 @@ definePageMeta({
 // VARIABLES
 const loads = reactive({
    loadPosts: false,
-   loadComms: {}
+   loadComms: {},
+   chat: false
 })
 const user = ref(null)
 const userPosts = ref(null)
@@ -308,6 +310,23 @@ async function unlikePost(postId){
     console.log(error);
   }
 }
+
+async function toChatWithUser(userId){
+  loads.chat = true
+  const chatsRes = [await supabase.from('chats').select('id').eq('user1_id', sessionUserId).eq('user2_id', userId), 
+                    await supabase.from('chats').select('id').eq('user2_id', sessionUserId).eq('user1_id', userId)]
+  const chatIdRes = chatsRes.find((res) => {
+    return res.data.length > 0
+  })
+    if(chatIdRes){
+      loads.chat = false
+      navigateTo(`/messages/chat/${chatIdRes.data[0].id}`)
+    } else {
+      const {data, error} = await supabase.from('chats').insert({user1_id: sessionUserId, user2_id: userId}).select('id')
+      navigateTo(`messages/chat/${data[0].id}`)
+      loads.chat = false
+    }
+  }
 
 onMounted(() => {
   fetchUser()

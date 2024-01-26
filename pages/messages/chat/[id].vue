@@ -1,5 +1,5 @@
 <template>
-  user friends
+  chat
 </template>
 
 <script>
