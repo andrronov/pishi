@@ -1,11 +1,21 @@
 <template>
   <div class="w-full realtive flex flex-col items-center h-screen">
+    <div @click="toProfile(userProfile.id)" v-if="userProfile" class="w-full cursor-pointer justify-center gap-4 flex flex-row items-center h-10 xs:h-16 bg-black border-2 border-white">
+      <img :src="userProfile.avatar" class="w-9 h-9 xs:w-11 xs:h-11" alt="avatar">
+      <div class="flex flex-col items-center text-xs xs:text-base">
+        <p>{{ userProfile.name }} {{ userProfile.surname }}</p>
+        <div class="flex flex-row items-center gap-2">
+        <p class="text-gray-400 dark:text-gray-600 text-xs xs:text-sm">Online</p> <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        </div>
+      </div>
+    </div>
     <div class="bg-gray-800 dark:bg-gray-200 w-full h-full overflow-y-scroll" id="chat" ref="chat">
       <div v-if="messages" class="flex flex-col w-full justify-around px-4 py-2 gap-4">
-        <div v-for="(msg, index) in messages" :key="index" :class="msg.author == session.data.session.user.id ? 'bg-white text-black dark:bg-black dark:text-white self-end' : 'bg-black text-white dark:bg-white dark:text-black self-start'" class="flex flex-row px-1 py-1 justify-between min-h-10 border-2 border-gray-500 min-w-min max-w-max gap-3" id="myMessage">
+        <div v-for="(msg, index) in messages" :key="index" :class="msg.author == session.data.session.user.id ? 'bg-white text-black dark:bg-black dark:text-white self-end' : 'bg-black text-white dark:bg-white dark:text-black self-start'"
+          class="flex flex-row px-1 py-1 text-sm xs:text-base justify-between min-h-10 border-2 border-gray-500 min-w-min max-w-max gap-3" id="myMessage">
           <p>{{ msg.text }}</p>
-          <p v-if="msg.created_at.minutes" class="text-gray-500 text-xs self-end">{{ msg.created_at.hour }}:{{ msg.created_at.minutes }}</p>
-          <p v-else class="text-gray-500 text-xs self-end">now</p>
+          <p v-if="msg.created_at.minutes" class="text-gray-500 text-[10px] xs:text-xs self-end">{{ msg.created_at.hour }}:{{ msg.created_at.minutes }}</p>
+          <p v-else class="text-gray-500 text-[10px] xs:text-xs self-end">now</p>
         </div>
       </div>
     </div>
@@ -34,6 +44,8 @@ const isScrollDown = ref(false)
 
 const messages = ref([])
 const inputMessage = ref(null)
+
+const userProfile = ref(null)
 // -----------------------------
 const { y, arrivedState } = useScroll(chat)
 
@@ -98,8 +110,26 @@ function scrollChat(){
   }, 1);
 }
 
+async function loadUserProfile(){
+  const {data, error} = await supabase.from('chats').select('*, user1_id(avatar, name, surname, id),user2_id(avatar, name, surname, id)').eq('id', route.params.id)
+  console.log(data);
+  if(!error){
+    data.find(user => {
+      if(user.user1_id.id !== session.data.session.user.id){
+        userProfile.value = user.user1_id
+      } else {
+        userProfile.value = user.user2_id
+      }
+    })
+  }
+}
+
+function toProfile(userId){
+  navigateTo(`/profile/${userId}`)
+}
+
 watchEffect(() => {
   loadMessages()
-  // yyy()
+  loadUserProfile()
 })
 </script>
