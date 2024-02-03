@@ -15,7 +15,7 @@
           {{ chat.profiles.surname }}
         </template>
         <!-- /!!!!!!!!!!!/ -->
-        <template #nickname> 0 new messages</template>
+        <template #nickname> {{ chat.chat_messages[0].text }}</template>
         <template #lastSeen>
           <div class="shrink-0 flex flex-col items-end">
             <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
@@ -49,8 +49,8 @@ const chats = ref([])
 
 async function getChats(){
   loads.chats = true
-   const chatsRes = [await supabase.from('chats').select('id, user1_id, user2_id, profiles:user2_id(*)').eq('user1_id', sessUserId), 
-               await supabase.from('chats').select('id, user1_id, user2_id, profiles:user1_id(*)').eq('user2_id', sessUserId)]
+   const chatsRes = [await supabase.from('chats').select('id, user1_id, user2_id, profiles:user2_id(*), chat_messages:id(*)').eq('user1_id', sessUserId).limit(1, { referencedTable: 'chat_messages' }).order('created_at', {ascending: false, referencedTable: 'chat_messages'}), 
+               await supabase.from('chats').select('id, user1_id, user2_id, profiles:user1_id(*), chat_messages:id(*)').eq('user2_id', sessUserId).limit(1, { referencedTable: 'chat_messages' }).order('created_at', {ascending: false, referencedTable: 'chat_messages'})]
    if(chatsRes){
       chatsRes.forEach(res => {
          chats.value.push(...res.data)

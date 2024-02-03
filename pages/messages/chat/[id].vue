@@ -4,9 +4,11 @@
       <img :src="userProfile.avatar" class="w-9 h-9 xs:w-11 xs:h-11" alt="avatar">
       <div class="flex flex-col items-center text-xs xs:text-base">
         <p>{{ userProfile.name }} {{ userProfile.surname }}</p>
-        <div class="flex flex-row items-center gap-2">
-        <p class="text-gray-400 dark:text-gray-600 text-xs xs:text-sm">Online</p> <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+        <div class="flex flex-row items-center gap-2" v-if="!isTyping">
+          <p class="text-gray-400 dark:text-gray-600 text-xs xs:text-sm">Online</p>
+          <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
         </div>
+        <p v-else>typing...</p>
       </div>
     </div>
     <div class="bg-gray-800 dark:bg-gray-200 w-full h-full overflow-y-scroll" id="chat" ref="chat">
@@ -21,7 +23,7 @@
     </div>
     <button v-if="isScrollDown" @click="y = scrollChat" class="absolute bottom-12 p-2 text-black dark:text-white bg-white dark:bg-black mx-auto">down</button>
     <div class="flex flex-row items-center w-full">
-      <input v-model="inputMessage" @keydown.enter="sendMessage" type="text" class="p-1 text-black dark:text-white dark:bg-black w-full">
+      <input v-model="inputMessage" @keydown.enter="sendMessage" @input="userTyping" type="text" class="p-1 text-black dark:text-white dark:bg-black w-full">
       <button @click="sendMessage" class="py-1 w-24 hover:bg-gray-500">Send</button>
     </div>
   </div>
@@ -41,6 +43,7 @@ const route = useRoute()
 
 const chat = ref(null)
 const isScrollDown = ref(false)
+const isTyping = ref(false)
 
 const messages = ref([])
 const inputMessage = ref(null)
@@ -88,7 +91,7 @@ async function sendMessage(){
   }
 }
 
-const messgs = supabase
+supabase
   .channel(`chat-${route.params.id}`)
   .on(
     'postgres_changes',
@@ -103,6 +106,23 @@ const messgs = supabase
   )
   .subscribe()
 
+
+const chatChannel = supabase.channel(`chat-${route.params.id}`)
+  chatChannel.on('broadcast', {event: 'typing'}, (payload) => {
+    isTyping.value = true
+    setTimeout(() => {
+      isTyping.value = false
+    }, 1000);
+  })
+chatChannel.subscribe()
+
+function userTyping(){
+  chatChannel.send({type: 'broadcast', event: 'typing', payload: true })
+}
+
+onUnmounted(() => {
+  chatChannel.unsubscribe()
+})
 function scrollChat(){
   setTimeout(() => {
     console.log(chat.value.scrollHeight);
