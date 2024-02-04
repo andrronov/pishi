@@ -27,7 +27,7 @@
                     <p>{{ post.text }}</p>
                  </template>
                  <template v-if="post.img" #postImage>
-                    <img @click="openImg(post.img)" :src="post.img" alt="post img" class="cursor-pointer">
+                    <img @click="openImg(post.img)" :src="post.img" alt="post img" class="cursor-pointer mx-auto">
                   </template>
   
                  <!-- POST INTERFACE -->
@@ -51,7 +51,7 @@
                  </template> 
                  <template v-if="openComments[post.id]" #commentSection>
                   <div class="flex flex-row items-center mt-5">
-                     <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
+                     <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
                      <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
                    </div>
                     <UISpinner class="self-center my-4" v-if="loads.loadComms" />
@@ -227,6 +227,5 @@ function openImg(img){
 // LOAD POSTS
 onMounted(() => {
    fetchPosts()
-   console.log(posts);
 })
 </script>

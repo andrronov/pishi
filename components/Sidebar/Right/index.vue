@@ -1,7 +1,7 @@
 <template>
    <div class="flex flex-col">
     <!-- card 'inbox' -->
-       <SidebarRightFastCard title="Inbox">
+       <SidebarRightFastCard title="Inbox" :link="`/alerts`">
           <SidebarRightItem v-for="(notify, index) in inboxArray" :key="index">
              <div>
                 <p class="text-sm">{{notify.text}}</p>
@@ -10,11 +10,17 @@
        </SidebarRightFastCard>
  
     <!-- card 'who to add' -->
-       <SidebarRightFastCard title="Who to add">
-          <SidebarRightItem v-for="(whoToAdd, index) in possibleFriendsArray" :key="index">
-             <div class="flex flex-row justify-between items-center p-2">
-                <img :src="whoToAdd.photoUrl" class="w-14 h-14" alt="photo">
-                <p>@{{whoToAdd.nickname}}</p>
+       <SidebarRightFastCard title="Who to add" :link="`/friends/${sessionUserId}`">
+          <SidebarRightItem v-for="(profile, index) in possibleFriendsArray" :key="index">
+             <div @click="navigateTo(`/profile/${profile.id}`)" class="flex flex-row justify-between items-center p-2">
+                <img :src="profile.avatar" class="w-14 h-14" alt="photo">
+                <div class="flex flex-col">
+                  <div class="flex flex-row self-center gap-1">
+                     <p class="text-center">{{profile.name}}</p>
+                     <p class="text-center">{{profile.surname}}</p>
+                  </div>
+                   <p class="text-center text-[10px] text-gray-300 dark:text-gray-700">@{{profile.id}}</p>
+                </div>
                 <nuxt-icon name="plus-circle" class="text-4xl"></nuxt-icon>
              </div>
           </SidebarRightItem>
@@ -23,6 +29,9 @@
  </template>
  
  <script setup>
+ const supabase = useSupabaseClient()
+ const session = await supabase.auth.getSession();
+const sessionUserId = session.data.session.user.id
  // сделай в конце сообщения (это просто строка) иконку по типу нотификации (если кто-то лайкнул, в конце обозначение-иконку лайка)
  const inboxArray = ref([
     {
@@ -38,20 +47,19 @@
        notIcon: null
     }
  ])
- const possibleFriendsArray = ref([
-    {
-       photoUrl: '/me.jpg',
-       nickname: 'andrronov'
-    },
-    {
-       photoUrl: null,
-       nickname: 'andronovv'
-    },
-    {
-       photoUrl: null,
-       nickname: 'aandronov'
-    }
- ])
+ const possibleFriendsArray = ref()
+
+async function randomizeProfiles(){
+   const {data, error} = await supabase.from('random_profiles').select().limit(3)
+   if(!error){
+      possibleFriendsArray.value = data
+      console.log(possibleFriendsArray.value);
+   }
+}
+
+watchEffect(() => {
+   randomizeProfiles()
+})
  </script>
  
  <style>

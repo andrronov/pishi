@@ -43,15 +43,9 @@
     <div class="h-0.5 my-4 bg-white dark:bg-black w-full"></div>
 
     <div v-if="!isMyProfile" class="flex flex-row w-full items-center text-white dark:text-black">
-      <div v-if="!isSubed" :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
-         <button @click="subUser(user[0].id)">Subscribe</button>
-      </div>
-      <div v-if="isSubed" :class="defaultTransition" class="p-3 bg-white text-black dark:bg-black dark:text-white flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
-         <button @click="unSubUser(user[0].id)">Subscribed</button>
-      </div>
-      <div :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
-         <button @click="toChatWithUser(user[0].id)">Message</button>
-      </div>
+         <button v-if="!isSubed" :class="defaultTransition" @click="subUser(user[0].id)" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">Subscribe</button>
+         <button v-if="isSubed" :class="defaultTransition" class="p-3 bg-white text-black dark:bg-black dark:text-white flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer" @click="unSubUser(user[0].id)">Subscribed</button>
+         <button @click="toChatWithUser(user[0].id)" :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">Message</button>
    </div>
    <UISpinner v-if="loads.chat" class="self-center my-4" />
 
@@ -81,7 +75,7 @@
               <p>{{ post.text }}</p>
           </template>
           <template #postImage>
-              <img @click="openImg(post.img)" :src="post.img" alt="" class="cursor-pointer">
+              <img @click="openImg(post.img)" :src="post.img" alt="" class="cursor-pointer mx-auto">
           </template>
           <template #postLikes v-if="post.post_likes">
             <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
@@ -102,7 +96,7 @@
 
           <template v-if="openComments[post.id]" #commentSection>
             <div class="flex flex-row items-center mt-5">
-              <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-white">
+              <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
               <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
            </div>
             <UISpinner class="self-center my-4" v-if="loads.loadComms" />
@@ -126,7 +120,7 @@
                   </template>
                </PostComment>
                <p class="text-white bg-red-500 text-center my-2" v-if="errorLog">error, {{ errorLog }}</p>
-               <button @click="fetchPostsComments(post.id)" class="p-2 mt-4">LOAD POSTS</button>
+               <!-- <button @click="fetchPostsComments(post.id)" class="p-2 mt-4">LOAD POSTS</button> -->
                
               </template>
         </Post>
@@ -217,7 +211,7 @@ async function fetchPostsComments(postId){
       loads.loadComms = true
       openComments[postId] = !openComments[postId]
       // const comments = await useFetchPostComments(supabase, postId, minRange.value, maxRange.value)
-      postComments[postId] = await useFetchPostComments(supabase, postId, minRange, maxRange)
+      postComments[postId] = await useFetchPostComments(supabase, postId)
       // postComments[postId].push(...comments)
       console.log(postComments[postId]);
       // minRange.value += 3
