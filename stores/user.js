@@ -2,7 +2,8 @@ import { defineStore } from "pinia"
 
 export const useUserStore = defineStore('user', {
    state: () => ({
-      uData: ''
+      uData: '',
+      // isDarkMode: ''
    }),
    actions: {
       updateUser(userData){
@@ -11,6 +12,13 @@ export const useUserStore = defineStore('user', {
       },
       getUser(){
          return this.uData
-      }
+      },
+      // setMode(mode){
+      //    console.log('mode', mode)
+      //    this.isDarkMode = mode
+      // },
+      // getMode(){
+      //    return this.isDarkMode
+      // }
    }
 })

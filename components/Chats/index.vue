@@ -15,7 +15,7 @@
           {{ chat.profiles.surname }}
         </template>
         <!-- /!!!!!!!!!!!/ -->
-        <template #nickname> {{ chat.chat_messages[0].text }}</template>
+        <template #nickname> {{ chat.chat_messages[0]?.text }}</template>
         <template #lastSeen>
           <div class="shrink-0 flex flex-col items-end">
             <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">

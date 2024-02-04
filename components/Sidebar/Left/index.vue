@@ -1,6 +1,6 @@
 <template>
    <div class="flex flex-col h-screen">
-     <NuxtLink to="/">
+     <NuxtLink to="/feed">
        <h1 class="pishi p-2 my-2 text-white dark:text-black xs:text-xl sm:text-2xl text-center hover:text-gray-300" :class="defaultTransition">PISHI</h1>
      </NuxtLink>
      <div class="mt-2 space-y-3">
@@ -43,6 +43,14 @@
          </template>
          <template v-slot:name>
            Photos
+         </template>
+       </SidebarLeftTab>
+       <SidebarLeftTab :link="'/settings'" :active="route.name == 'settings'">
+         <template v-slot:icon>
+           <nuxt-icon name="settings"></nuxt-icon>
+         </template>
+         <template v-slot:name>
+           Settings
          </template>
        </SidebarLeftTab>
        <SidebarLeftTab @click="logOutUser">
