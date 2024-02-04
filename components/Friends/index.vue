@@ -1,4 +1,41 @@
 <template>
+  <UISpinner v-if="props.isLoading" />
+  <div v-if="props.searchRes" class="flex flex-col">
+    <p class="p-2 text-lg bg-white text-black mt-2 -mb-2">Search Results:</p>
+    <button @click="emit('closeSearch')" class="p bg-black text-white border border-white hover:bg-gray-500">Close</button>
+
+    <div v-if="props.searchRes?.length > 0" class="flex flex-col max-h-80 overflow-y-scroll">
+      <FriendsList v-for="(search, index) in props.searchRes" :key="index" @click="toProfile(search.id)">
+        <template #avatar>
+          <img
+            :src="search.avatar"
+            alt="avatar"
+            class="h-12 w-12 flex-none bg-gray-50"
+          />
+        </template>
+        <template #name>
+          {{ search.name }}
+          {{ search.surname }}
+        </template>
+        <template #nickname> @{{ search.id }} </template>
+        <template #lastSeen>
+          <div class="shrink-0 flex flex-col items-end">
+            <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
+              <time>3h ago</time>
+            </p>
+            <div v-else class="mt-1 flex items-center gap-x-1.5">
+              <div class="flex-none rounded-full bg-emerald-500/20 p-1">
+                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              </div>
+              <p class="text-xs leading-5 text-gray-500">Online</p>
+            </div>
+          </div>
+        </template>
+      </FriendsList>
+    </div>
+    <p v-if="props.searchRes?.length < 1" class="my-2">Nobody was found</p>
+  </div>
+
   <div class="flex flex-row w-full items-center text-white dark:text-black">
     <button
       v-for="(tab, index) in tabs"
@@ -94,6 +131,11 @@
 </template>
 
 <script setup>
+const emit = defineEmits({
+  closeSearch(){
+    return false
+  }
+})
 const props = defineProps({
   currentTab: {
     type: Number,
@@ -101,6 +143,14 @@ const props = defineProps({
   },
   USERID: {
     type: String,
+  },
+  searchRes: {
+    type: Array,
+    default: null,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
   }
 });
 // VARIABLES

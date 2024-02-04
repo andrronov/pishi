@@ -18,10 +18,14 @@
           <p>{{ msg.text }}</p>
           <p v-if="msg.created_at.minutes" class="text-gray-500 text-[10px] xs:text-xs self-end">{{ msg.created_at.hour }}:{{ msg.created_at.minutes }}</p>
           <p v-else class="text-gray-500 text-[10px] xs:text-xs self-end">now</p>
+          <!-- <p>{{msg.created_at.day}} {{ msg.created_at.month }}</p> -->
         </div>
       </div>
     </div>
-    <button v-if="isScrollDown" @click="y = scrollChat" class="absolute bottom-12 p-2 text-black dark:text-white bg-white dark:bg-black mx-auto">down</button>
+    <div v-if="isScrollDown" class="flex flex-row items-center absolute bottom-12">
+      <button @click="y = scrollChat" class="p-2 text-black dark:text-white bg-white dark:bg-black mx-auto">down</button>
+      <p class="bg-black text-gray-500 dark:bg-white p-2" v-if="unReadenMsg.length > 0">{{unReadenMsg.length}}</p>
+    </div>
     <div class="flex flex-row items-center w-full">
       <input v-model="inputMessage" @keydown.enter="sendMessage" @input="userTyping" type="text" class="p-1 text-black dark:text-white dark:bg-black w-full">
       <button @click="sendMessage" class="py-1 w-24 hover:bg-gray-500">Send</button>
@@ -46,6 +50,7 @@ const isScrollDown = ref(false)
 const isTyping = ref(false)
 
 const messages = ref([])
+const unReadenMsg = ref([])
 const inputMessage = ref(null)
 
 const userProfile = ref(null)
@@ -55,6 +60,7 @@ const { y, arrivedState } = useScroll(chat)
 watch(y, () => {
   if(arrivedState.bottom){
     isScrollDown.value = false
+    unReadenMsg.value = []
   } else {
     isScrollDown.value = true
   }
@@ -66,12 +72,15 @@ async function loadMessages(){
     scrollChat()
     data.map((item) => {
       const itemTime = new Date(item.created_at)
+      let day = itemTime.getDate()
+      let month = itemTime.getMonth() + 1
       const hour = itemTime.getHours()
       let minutes = itemTime.getMinutes()
-      if(minutes < 10){
-        minutes = '0' + minutes
-      }
-      return item.created_at = {hour, minutes}
+      minutes < 10 ? minutes = '0' + minutes : minutes
+      day < 10 ? day = '0' + day : day
+      month < 10 ? month = '0' + month : month
+      
+      return item.created_at = {hour, minutes, day, month}
     })
     messages.value.push(...data)
     console.log(messages.value);
@@ -99,6 +108,7 @@ supabase
     (payload) => {
       console.log('pload', payload);
       messages.value.push(payload.new)
+      unReadenMsg.value.push(payload.new)
       if(!isScrollDown.value){
         scrollChat()
       }
@@ -107,12 +117,12 @@ supabase
   .subscribe()
 
 
-const chatChannel = supabase.channel(`chat-${route.params.id}`)
+const chatChannel = supabase.channel(`chat-typing-${route.params.id}`)
   chatChannel.on('broadcast', {event: 'typing'}, (payload) => {
     isTyping.value = true
     setTimeout(() => {
       isTyping.value = false
-    }, 1000);
+    }, 2000);
   })
 chatChannel.subscribe()
 

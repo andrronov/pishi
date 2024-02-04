@@ -27,7 +27,7 @@
                     <p>{{ post.text }}</p>
                  </template>
                  <template v-if="post.img" #postImage>
-                    <img @click="openImg(post.img)" :src="post.img" alt="post img">
+                    <img @click="openImg(post.img)" :src="post.img" alt="post img" class="cursor-pointer">
                   </template>
   
                  <!-- POST INTERFACE -->

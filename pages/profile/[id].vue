@@ -81,7 +81,7 @@
               <p>{{ post.text }}</p>
           </template>
           <template #postImage>
-              <img @click="openImg(post.img)" :src="post.img" alt="">
+              <img @click="openImg(post.img)" :src="post.img" alt="" class="cursor-pointer">
           </template>
           <template #postLikes v-if="post.post_likes">
             <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
@@ -323,7 +323,7 @@ async function toChatWithUser(userId){
       navigateTo(`/messages/chat/${chatIdRes.data[0].id}`)
     } else {
       const {data, error} = await supabase.from('chats').insert({user1_id: sessionUserId, user2_id: userId}).select('id')
-      navigateTo(`messages/chat/${data[0].id}`)
+      navigateTo(`/messages/chat/${data[0].id}`)
       loads.chat = false
     }
   }
