@@ -53,14 +53,14 @@
            Settings
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab @click="logOutUser">
+       <!-- <SidebarLeftTab @click="logOutUser">
          <template v-slot:icon>
            <nuxt-icon name="leave-door"></nuxt-icon>
          </template>
          <template v-slot:name>
            Log out
          </template>
-       </SidebarLeftTab>
+       </SidebarLeftTab> -->
       </div>
 
      <div class="flex flex-row items-center justify-center px-2 py-2 mx-auto mt-auto mb-5 cursor-pointer w-14 xl:w-full hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
