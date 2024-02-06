@@ -13,7 +13,7 @@
           </template>
         </SidebarLeftTab>
        
-       <SidebarLeftTab :link="'/alerts'" :active="route.name == 'alerts'">
+       <SidebarLeftTab :link="'/inbox'" :active="route.name == 'inbox'">
          <template v-slot:icon>
            <nuxt-icon name="bell"></nuxt-icon>
          </template>

@@ -1,12 +1,17 @@
 <template>
    <div class="flex flex-col">
     <!-- card 'inbox' -->
-       <SidebarRightFastCard title="Inbox" :link="`/alerts`">
-          <SidebarRightItem v-for="(notify, index) in inboxArray" :key="index">
-             <div>
-                <p class="text-sm">{{notify.text}}</p>
-             </div>
-          </SidebarRightItem>
+       <SidebarRightFastCard title="Inbox" :link="`/inbox`">
+         <div v-if="inboxArray">
+            <SidebarRightItem v-for="(notify, index) in inboxArray" :key="index">
+               <div>
+                  <p class="text-sm">{{notify.text}}</p>
+               </div>
+            </SidebarRightItem>
+         </div>
+         <SidebarRightItem v-else>
+            <p>Nothing happen</p>
+         </SidebarRightItem>
        </SidebarRightFastCard>
  
     <!-- card 'who to add' -->
@@ -32,21 +37,8 @@
  const supabase = useSupabaseClient()
  const session = await supabase.auth.getSession();
 const sessionUserId = session.data.session.user.id
- // сделай в конце сообщения (это просто строка) иконку по типу нотификации (если кто-то лайкнул, в конце обозначение-иконку лайка)
- const inboxArray = ref([
-    {
-       text: "@andrronov liked your photo",
-       notIcon: null
-    },
-    {
-       text: "@andrronov wants to add you in friends",
-       notIcon: null
-    },
-    {
-       text: "@andrronov replied to your commentary",
-       notIcon: null
-    }
- ])
+
+const inboxArray = ref()
  const possibleFriendsArray = ref()
 
 async function randomizeProfiles(){
@@ -57,8 +49,16 @@ async function randomizeProfiles(){
    }
 }
 
+async function fetchInbox(){
+   const {data, error} = await supabase.from('inbox').select().eq('user_id', sessionUserId).limit(3)
+   if(!error){
+      inboxArray.value = data
+   }
+}
+
 watchEffect(() => {
    randomizeProfiles()
+   fetchInbox()
 })
  </script>
  

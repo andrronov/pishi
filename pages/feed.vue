@@ -14,7 +14,7 @@
                            <p class="font-medium">
                               @{{ post.profiles.id }}</p>
                            <p class="text-sm text-white/50 dark:text-black/50 font-light">
-                              {{ formatTimeAgo(new Date(post.created_at)) }}</p>
+                              {{ formatTimeAgo(new Date(post.created_at)) }} #{{ post.id }}</p>
                         </div>
                      </div>
                  </template>
@@ -51,8 +51,8 @@
                  </template> 
                  <template v-if="openComments[post.id]" #commentSection>
                   <div class="flex flex-row items-center mt-5">
-                     <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
-                     <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
+                     <input @keydown.enter="postComment(post.id, post)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
+                     <button @click="postComment(post.id, post)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
                    </div>
                     <UISpinner class="self-center my-4" v-if="loads.loadComms" />
                     <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition">
@@ -179,9 +179,14 @@ async function fetchPostsComments(postId){
 }
 
 // POST A COMMENT
-async function postComment(postId){
+async function postComment(postId, post){
    const commsRes = await usePostComment(supabase, store.getUser().id, postId, commentText.value)
-   if(commsRes){commentText.value = ''; fetchPostsComments(postId); openComments[postId] = true; console.log(commsRes);} 
+   if(commsRes){
+      await supabase.from('inbox').insert({text: `@${session.data.session.user.id} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+      fetchPostsComments(postId)
+      commentText.value = ''
+      openComments[postId] = true
+   } 
    else{ console.log(commsRes); errorLog.value = commsRes.message }
 }
 
@@ -197,6 +202,7 @@ async function likePost(postId){
       .select('*, profiles(*), post_likes(*)')
       .order('created_at', {ascending: false})
    posts.value = data
+   await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: userId})
   } else {
     console.log(error);
   }

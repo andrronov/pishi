@@ -62,7 +62,7 @@
                   <p class="font-medium">
                      @{{ post.profiles.id }}</p>
                   <p class="text-sm text-white/50 dark:text-black/50 font-light">
-                     {{ formatTimeAgo(new Date(post.created_at)) }}</p>
+                     {{ formatTimeAgo(new Date(post.created_at)) }} #{{ post.id }}</p>
                </div>
             </div>
         </template>
@@ -96,8 +96,8 @@
 
           <template v-if="openComments[post.id]" #commentSection>
             <div class="flex flex-row items-center mt-5">
-              <input @keydown.enter="postComment(post.id)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
-              <button @click="postComment(post.id)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
+              <input @keydown.enter="postComment(post.id, post)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
+              <button @click="postComment(post.id, post)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
            </div>
             <UISpinner class="self-center my-4" v-if="loads.loadComms" />
             <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition" :userAvatar="comm.avatar">
@@ -220,9 +220,15 @@ async function fetchPostsComments(postId){
       
 }
 // POST A COMMENT
-async function postComment(postId){
+async function postComment(postId, post){
+  // console.log(post);
    const commsRes = await usePostComment(supabase, store.getUser().id, postId, commentText.value)
-   if(commsRes == "true"){commentText.value = ''; fetchPostsComments(postId); openComments[postId] = true; console.log(commsRes);} 
+   if(commsRes == "true"){
+     await supabase.from('inbox').insert({text: `@${sessionUserId} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+     fetchPostsComments(postId)
+    commentText.value = ''
+    openComments[postId] = true
+  } 
    else{ console.log(commsRes); errorLog.value = commsRes.message }
 }
 // DELETE POST (dont work for now)
@@ -270,6 +276,7 @@ async function subUser(userId){
   const {data, error} = await supabase.from('followers').insert({who_followed: sessionUserId, whos_following: userId})
   if(!error){
     isSubed.value = true
+    await supabase.from('inbox').insert({text: `@${sessionUserId} followed you`, user_id: userId})
   } else {
     errorLog.value = error
     throw new Error(error)
@@ -280,6 +287,8 @@ async function unSubUser(userId){
   const {data, error} = await supabase.from('followers').delete().eq('who_followed', sessionUserId, 'whos_following', userId)
   if(!error){
     isSubed.value = false
+    const {error} = await supabase.from('inbox').insert({text: `@${sessionUserId} unfollowed you`, user_id: userId})
+    console.log(error);
   } else {
     errorLog.value = error
     throw new Error(error)
@@ -292,6 +301,7 @@ async function likePost(postId){
   const {data, error} = await supabase.from('post_likes').insert({post_id: postId, user_id: sessionUserId})
   if(!error){
     fetchUserPosts()
+    await supabase.from('inbox').insert({text: `@${sessionUserId} liked your post`, user_id: route.params.id})
   } else {
     console.log(error);
   }
