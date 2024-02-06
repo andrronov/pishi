@@ -96,7 +96,6 @@ onClickOutside(target, event => emit('closeModal'))
 
  function createPost(){
    loading.value = true
-   console.log('uuuuuuuuu', session);
    supabase.from('posts').insert({
       author: session.data.session.user.id,
       title: postTitle.value,
@@ -127,10 +126,8 @@ onClickOutside(target, event => emit('closeModal'))
 async function addPhoto(ev){
   imgLoad.value = true
   const photo = ev.target.files[0]
-  const newPhotoName = Date.now() + photo.name
+  const newPhotoName = Date.now() + (Math.random() * 1000).toFixed()
   const {data, error} = await supabase.storage.from('post_photos').upload(newPhotoName, photo)
-  console.log(data);
-  console.log(error);
   if(!error){
     postPhoto.value = 'https://ilabflsecnunffcornxh.supabase.co/storage/v1/object/public/post_photos/' + data.path
   }

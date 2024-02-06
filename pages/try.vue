@@ -14,12 +14,14 @@
      :likes="post.post_likes.length"
       />
   </div> -->
-  <Scroll />
+  xxx
+  <!-- <Swiper /> -->
+  <!-- <Scroll /> -->
 </template>
 
 <script setup>
 definePageMeta({
-  layout: "default",
+  layout: "empty",
 });
 
 </script>

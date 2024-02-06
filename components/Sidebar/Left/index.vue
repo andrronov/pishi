@@ -37,7 +37,7 @@
            Friends
          </template>
        </SidebarLeftTab>
-       <SidebarLeftTab :active="route.name == 'photos'">
+       <SidebarLeftTab :link="'/photos'" :active="route.name == 'photos'">
          <template v-slot:icon>
            <nuxt-icon name="camera"></nuxt-icon>
          </template>

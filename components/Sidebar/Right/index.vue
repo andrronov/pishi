@@ -50,7 +50,7 @@ async function randomizeProfiles(){
 }
 
 async function fetchInbox(){
-   const {data, error} = await supabase.from('inbox').select().eq('user_id', sessionUserId).limit(3)
+   const {data, error} = await supabase.from('inbox').select().eq('user_id', sessionUserId).limit(3).order('created_at', {ascending: false})
    if(!error){
       inboxArray.value = data
    }
