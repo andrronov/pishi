@@ -92,7 +92,6 @@ onClickOutside(target, event => emit('closeModal'))
  const postTitle = ref('')
  const postText = ref('')
  const postPhoto = ref(null)
-//  const POST_IMAGE   !!!
 
  function createPost(){
    loading.value = true

@@ -13,21 +13,7 @@
 11. сделать статус в сети
 
 10. поправить полиси для всех (3) бд с сообщениями и чатами --- мб понадобится поменять в бд время на таймзон
+11. доделать наконец удаление постов и фото (мб сообщений)
+12. сделать страницу с ошибочным путем
 
-async function fetchPosts(){
-   loads.loadPosts = true
-   const {data, error} = await supabase.from('followers')
-      .select('whos_following(*), profiles:whos_following(*), profiles:whos_following(*)')
-      .eq('who_followed', session.data.session.user.id)
-      // .order('created_at', {ascending: false})
-   if(!error){
-      posts = data
-      console.log(data);
-      loads.loadPosts = false
-   } else {
-      errorLog.value = error
-      loads.loadPosts = false
-      console.log(error);
-      throw Error(error)
-   }
-}
+https://dev.to/dailydevtips1/making-a-fullscreen-vertical-slider-with-tailwind-and-eleventy-1gk6

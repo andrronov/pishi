@@ -9,12 +9,13 @@
                <NuxtIcon name="post" />
                <button>Add post</button>
             </div>
-            <div :class="defaultTransition" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
+            <div :class="defaultTransition" @click="modalPhotoOpen = true" class="p-3 flex flex-row w-2/4 justify-center items-center gap-2 border-2 border-white dark:border-black hover:text-gray-500 hover:bg-gray-200 cursor-pointer">
                <NuxtIcon name="photo" />
                <button>Post photo</button>
             </div>
          </div>
          <AddPost :modal-open="modalOpen" @close-modal="modalOpen = false" @reload-posts="reloadPosts" />
+         <PostPhoto :modal-open="modalPhotoOpen" @close-modal="modalPhotoOpen = false" />
          <slot></slot>
       </div>
    </div>
@@ -28,6 +29,7 @@ const emit = defineEmits({
 })
 
 const modalOpen = ref(false);
+const modalPhotoOpen = ref(false)
 
 function reloadPosts(){
    console.log('emitting to feed');

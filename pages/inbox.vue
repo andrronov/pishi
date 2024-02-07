@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen border-x border-white dark:border-black overflow-y-scroll">
+  <div class="flex flex-col h-screen border-x border-white dark:border-black overflow-y-auto">
    <div class="flex flex-col-reverse py-4 px-1">
       <div v-for="(alert, index) in inboxArray" :key="index" class="flex flex-row gap-2 items-center justify-between border-y border-white dark:border-black p-2">
          <!-- <img src="/me.jpg" class=" w-10 h-10 s:w-12 s:h-12" alt=""> -->

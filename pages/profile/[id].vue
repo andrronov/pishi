@@ -51,8 +51,19 @@
 
    <button v-if="isMyProfile" @click="profileModal = true" class="p-3 bg-white dark:bg-black text-black dark:text-white mt-1 hover:bg-gray-500" :class="defaultTransition">Change profile</button>
 
+   <!-- photos -->
+   <div v-if="userPhotos">
+      <h3 class="mt-4 text-xl mb-4">Photos</h3>
+    <div class="flex flex-col bg-gray-800 dark:bg-gray-200 border-y-2 border-white dark:border-black py-2 overflow-x-auto">
+      <div class="flex flex-row items-center gap-2">
+        <img v-for="(photo, index) in userPhotos" :key="index" :src="photo.img" @click="toPhoto(photo)" class="object-cover w-24 h-24 cursor-pointer" alt="user photo">
+      </div>
+    </div>
+   </div>
+
    <!-- posts -->
    <div v-if="userPosts">
+    <h3 class="mt-4 text-xl mb-2">Posts</h3>
       <div v-for="(post, index) in userPosts" :key="index">
         <Post @delete="deletePost(post.id)" :isMyPage="isMyProfile">
           <template #postData>
@@ -171,6 +182,7 @@ const photoView = ref(null)
 const isSubed = ref(null)
 const minRange = ref(0)
 const maxRange = ref(2)
+const userPhotos = ref(null)
 // ------------------------------------
 
 // Check is my profile
@@ -332,12 +344,24 @@ async function toChatWithUser(userId){
     }
   }
 
+async function fetchUserPhotos(){
+  const {data, error} = await supabase.from('photos').select().eq('author', route.params.id)
+  if(!error){
+    userPhotos.value = data
+  }
+}
+
+function toPhoto(photo){
+  navigateTo(`/photos/${photo.id}`)
+}
+
 onMounted(() => {
   fetchUser()
 })
 watchEffect(() => {
   checkIsMyProfile()
   fetchUserPosts()
+  fetchUserPhotos()
   fetchFollowings()
   fetchFollowers()
 })

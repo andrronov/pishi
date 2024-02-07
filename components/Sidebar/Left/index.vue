@@ -1,7 +1,7 @@
 <template>
    <div class="flex flex-col h-screen">
      <NuxtLink to="/feed">
-       <h1 class="pishi p-2 my-2 text-white dark:text-black xs:text-xl sm:text-2xl text-center hover:text-gray-300" :class="defaultTransition">PISHI</h1>
+       <h1 class="pishi p-1 my-1 text-white dark:text-black xs:text-xl sm:text-2xl text-center hover:text-gray-300" :class="defaultTransition">PISHI</h1>
      </NuxtLink>
      <div class="mt-2 space-y-3">
        <SidebarLeftTab :link="'/feed'" :active="route.name == 'feed'">
@@ -53,31 +53,21 @@
            Settings
          </template>
        </SidebarLeftTab>
-       <!-- <SidebarLeftTab @click="logOutUser">
-         <template v-slot:icon>
-           <nuxt-icon name="leave-door"></nuxt-icon>
-         </template>
-         <template v-slot:name>
-           Log out
-         </template>
-       </SidebarLeftTab> -->
       </div>
 
-     <div class="flex flex-row items-center justify-center px-2 py-2 mx-auto mt-auto mb-5 cursor-pointer w-14 xl:w-full hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
+     <div class="flex flex-row items-center justify-center mt-auto mb-5 xs:w-full cursor-pointer hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
 
-            <div v-if="user" @click="toUserProfile" class="flex flex-row">
-                <img :src="user.avatar" class="w-10 h-10">
-                <div class="flex-col ml-2">
+            <div v-if="user" @click="toUserProfile" class="flex flex-row w-full">
+                <img :src="user.avatar" class="w-fit h-fit sm:w-10 sm:h-10 xl:w-12 xl:h-12">
+                <div class="flex-col ml-2 hidden sm:block">
                     <h1 v-if="user" class="text-sm hidden sm:block font-bold text-gray-300 dark:text-gray-800">
                         {{ user.name }} {{ user.surname }}
-                        <!-- Andrew Andronov -->
                     </h1> 
                     <h1 v-else class="text-sm font-bold text-gray-300 dark:text-gray-800">
                         Undefined
                     </h1> 
-                    <p class="text-sm hidden xl:block text-gray-400 dark:text-gray-700">
+                    <p class="text-sm hidden sm:block text-gray-400 dark:text-gray-700">
                         @{{ user.id }}
-                        <!-- @andrronov -->
                     </p>
                 </div>
             </div>
