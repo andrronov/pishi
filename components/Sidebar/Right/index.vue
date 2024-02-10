@@ -18,7 +18,7 @@
        <SidebarRightFastCard title="Who to add" :link="`/friends/${sessionUserId}`">
           <SidebarRightItem v-for="(profile, index) in possibleFriendsArray" :key="index">
              <div @click="navigateTo(`/profile/${profile.id}`)" class="flex flex-row justify-between items-center p-2">
-                <img :src="profile.avatar" class="w-14 h-14" alt="photo">
+                <img :src="profile.avatar" class="w-14 h-14 object-cover" alt="photo">
                 <div class="flex flex-col">
                   <div class="flex flex-row self-center gap-1">
                      <p class="text-center">{{profile.name}}</p>
@@ -38,7 +38,7 @@
  const session = await supabase.auth.getSession();
 const sessionUserId = session.data.session.user.id
 
-const inboxArray = ref()
+const inboxArray = ref(null)
  const possibleFriendsArray = ref()
 
 async function randomizeProfiles(){

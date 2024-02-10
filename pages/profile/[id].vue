@@ -1,7 +1,7 @@
 <template>
   <div v-if="user" class="flex flex-col flex-wrap border-x-2 pt-4 border-white dark:border-black px-2">
     <div class="flex flex-row w-full justify-between items-center">
-      <img @click="openImg(user[0].avatar)" :src="user[0].avatar" alt="avatar" class="h-28 w-28 xs:h-32 xs:w-32 cursor-pointer">
+      <img @click="openImg(user[0].avatar)" :src="user[0].avatar" alt="avatar" class="h-28 w-28 object-cover xs:h-32 xs:w-32 cursor-pointer">
       <div class="hidden xs:flex flex-col items-end xs:items-center gap-2">
         <h1 class="text-base xs:text-xl text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
         <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
@@ -114,7 +114,7 @@
             <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition" :userAvatar="comm.avatar">
               <template #commentData>
                 <div class="flex min-w-0 gap-x-4 cursor-pointer" @click="toUser(comm.profiles.id)">
-                   <img class="h-12 w-12 flex-none bg-gray-50" :src="comm.profiles.avatar" alt="avatar" />
+                   <img class="h-12 w-12 object-cover flex-none bg-gray-50" :src="comm.profiles.avatar" alt="avatar" />
                    <div class="min-w-0 flex-auto">
                       <p class="text-sm leading-6 text-gray-400 dark:text-gray-600">
                          @{{ comm.profiles.id }}
@@ -126,13 +126,26 @@
                    </div>
                 </div>
              </template>
-                  <template #likes>
-                     {{ comm.likes }}
-                  </template>
+             <template #likes>
+              <div v-if="comm.post_comment_likes.find(isLikedComment)" class="shrink-0 flex flex-col items-center cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300" @click="unlikeComment(comm, post.id)">
+                 <p class="text-sm text-blue-400 dark:text-blue-600">
+                   {{ comm?.post_comment_likes.length }}
+                 </p>
+                 <p class="mt-1 text-2xl leading-5 text-blue-500">
+                   <NuxtIcon name="heart" />
+                 </p>
+               </div>
+              <div v-if="!comm.post_comment_likes.find(isLikedComment)" class="shrink-0 flex flex-col items-center cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300" @click="likeComment(comm, post.id)">
+                 <p class="text-sm text-gray-400 dark:text-gray-600">
+                   {{ comm?.post_comment_likes.length }}
+                 </p>
+                 <p class="mt-1 text-2xl leading-5 text-gray-500">
+                   <NuxtIcon name="heart" />
+                 </p>
+               </div>
+             </template>
                </PostComment>
-               <p class="text-white bg-red-500 text-center my-2" v-if="errorLog">error, {{ errorLog }}</p>
-               <!-- <button @click="fetchPostsComments(post.id)" class="p-2 mt-4">LOAD POSTS</button> -->
-               
+               <p class="text-white bg-red-500 text-center my-2" v-if="errorLog">error, {{ errorLog }}</p>               
               </template>
         </Post>
     </div>
@@ -249,6 +262,7 @@ async function deletePost(postId){
   .from('posts')
   .delete()
   .eq('id', postId)
+  .eq('author', sessionUserId)
   if(!error){
     fetchUserPosts()
   } else{
@@ -276,6 +290,9 @@ async function fetchFollowers() {
 // FIND IF LIKED
 function islike(el){
   return el.user_id == sessionUserId
+}
+function isLikedComment(el){
+   return el.liked_user_id == session.data.session.user.id
 }
 // OPEN PHOTO
 function openImg(img){
@@ -343,6 +360,27 @@ async function toChatWithUser(userId){
       loads.chat = false
     }
   }
+
+  async function likeComment(comm, postId){
+   const {data, error} = await supabase.from('post_comment_likes').insert({liked_user_id: session.data.session.user.id, comment_id: comm.id})
+   if(!error){
+      fetchPostsComments(postId)
+      openComments[postId] = true
+   } else {
+      throw new Error(error)
+   }
+   console.log(error);
+}
+async function unlikeComment(comm, postId){
+   const {data, error} = await supabase.from('post_comment_likes').delete().eq('comment_id', comm.id).eq('liked_user_id', session.data.session.user.id)
+   if(!error){
+      fetchPostsComments(postId)
+      openComments[postId] = true
+   } else {
+      throw new Error(error)
+   }
+   console.log(error);
+}
 
 async function fetchUserPhotos(){
   const {data, error} = await supabase.from('photos').select().eq('author', route.params.id)

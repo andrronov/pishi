@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     'nuxt-icons',
     '@nuxtjs/supabase',
     '@pinia/nuxt',
+    'nuxt-headlessui',
   ],
   runtimeConfig: {
     

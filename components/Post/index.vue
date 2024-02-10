@@ -19,7 +19,7 @@
       <div class="flex flex-row h-auto items-center">
             <slot name="postLikes"></slot>
          <slot name="commentsButton"></slot>
-         <slot name="shareButton"></slot>
+         <!-- <slot name="shareButton"></slot> -->
       </div>
       <div class="mt-4 overflow-y-scroll max-h-56">
          <slot name="commentSection"></slot>

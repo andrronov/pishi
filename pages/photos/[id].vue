@@ -18,14 +18,14 @@
                    </div>
                      <div class="bg-black dark:bg-white px-4 pb-4 pt-3">
                         <div class="sm:flex sm:items-start">
-                           <img :src="photo.img" class="shrink-0 w-fit h-auto object-cover shadow-xl bg-white" alt="">
+                           <img :src="photo.img" class="shrink-0 w-fit h-auto max-h-96 object-cover shadow-xl bg-white" alt="">
                         </div>
                         <h2 v-if="eRror" class="text-sm dark:bg-black dark:text-red-300 bg-white text-red-700 text-center sm:text-xl leading-7">
                            Something went wrong: {{ eRror.message }}
                         </h2>
                      </div>
                   <div v-if="photo.photos_likes" class="flex flex-row items-center justify-between mb-4 mt-2 self-center w-full">
-                     <div v-if="!photo.photos_likes.find(islike)" @click="likePhoto(photo.id)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-black border-white dark:border-black text-white dark:text-black">
+                     <div v-if="!photo.photos_likes.find(islike)" @click="likePhoto(photo.id, photo.author)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-black border-white dark:border-black text-white dark:text-black">
                         <NuxtIcon name="like" class="" />
                         <p class="text-xs">{{ photo.photos_likes.length }}</p>
                      </div>
@@ -107,6 +107,7 @@ async function loadPhotos(){
       imgLoad.value = false
       if(data.length < 1){
          noPhotos.value = true
+         isLoadMore.value = false
       }
    } else {
       imgLoad.value = false
@@ -119,13 +120,11 @@ function islike(el){
   return el.user_id == session.data.session.user.id
 }
 
-async function likePhoto(photoId){
+async function likePhoto(photoId, photoAuthor){
    const {error} = await supabase.from('photos_likes').insert({user_id: session.data.session.user.id, photo_id: photoId})
    if(!error){
-      const iii = images.value.find(i => i.id == photoId)
-      iii.photos_likes.push(session.data.session.user.id)
-      console.log(iii);
       loadPhotos()
+      await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your photo #${photoId}`, user_id: photoAuthor})
    } else{
       eRror.value = error
       throw new Error(error)
