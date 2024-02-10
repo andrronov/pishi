@@ -14,7 +14,18 @@
      :likes="post.post_likes.length"
       />
   </div> -->
-  xxx
+  asdas
+  <!-- <div class="container">
+    <ScrollTry>
+      <div class="h-full w-full">
+        <img src="/me.jpg" alt="">
+      </div>
+      <div class="h-full w-full">aaa</div>
+      <div class="h-full w-full">aaa</div>
+      <div class="h-full w-full">aaa</div>
+    </ScrollTry>
+  </div> -->
+  <ScrollTry />
   <!-- <Swiper /> -->
   <!-- <Scroll /> -->
 </template>
@@ -25,3 +36,10 @@ definePageMeta({
 });
 
 </script>
+
+<style scoped>
+.container {
+  width: 100%;
+  height: 100vh;
+}
+</style>

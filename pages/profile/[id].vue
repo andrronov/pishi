@@ -56,7 +56,7 @@
       <h3 class="mt-4 text-xl mb-4">Photos</h3>
     <div class="flex flex-col bg-gray-800 dark:bg-gray-200 border-y-2 border-white dark:border-black py-2 overflow-x-auto">
       <div class="flex flex-row items-center gap-2">
-        <img v-for="(photo, index) in userPhotos" :key="index" :src="photo.img" @click="toPhoto(photo)" class="object-cover w-24 h-24 cursor-pointer" alt="user photo">
+        <img v-for="(photo, index) in userPhotos" :key="index" :src="photo.img" @click="toPhoto(photo)" class="object-cover w-24 h-24 cursor-pointer hover:opacity-70" alt="user photo">
       </div>
     </div>
    </div>
