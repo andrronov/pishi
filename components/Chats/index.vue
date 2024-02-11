@@ -17,17 +17,7 @@
         <!-- /!!!!!!!!!!!/ -->
         <template #nickname> {{ chat.chat_messages[0]?.text }}</template>
         <template #lastSeen>
-          <div class="shrink-0 flex flex-col items-end">
-            <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
-              <time>3h ago</time>
-            </p>
-            <div v-else class="mt-1 flex items-center gap-x-1.5">
-              <div class="flex-none rounded-full bg-emerald-500/20 p-1">
-                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              </div>
-              <p class="text-xs leading-5 text-gray-500">Online</p>
-            </div>
-          </div>
+          <OnlineStatus :prmtrs="chat.profiles.id" />
         </template>
       </ChatsList>
     </div>

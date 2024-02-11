@@ -5,8 +5,7 @@
       <div class="flex flex-col items-center text-xs xs:text-base">
         <p class="text-white dark:text-black">{{ userProfile.name }} {{ userProfile.surname }}</p>
         <div class="flex flex-row items-center gap-2" v-if="!isTyping">
-          <p class="text-gray-400 dark:text-gray-600 text-xs xs:text-sm">Online</p>
-          <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+          <OnlineStatus :prmtrs="userProfile.id" />
         </div>
         <p v-else class="text-white dark:text-black">typing...</p>
       </div>
