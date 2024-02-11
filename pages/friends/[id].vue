@@ -1,9 +1,9 @@
 <template>
    <div class="flex flex-row items-center">
       <input v-model="inputSearch" @keydown.enter="searchFriend" type="text" placeholder="Name and Surname or @id" class="w-full p-3 bg-black dark:bg-white dark:text-black dark:border-black border-2 border-white text-white">
-      <button @click="searchFriend" class="bg-white text-black py-3 border-y-2 border-white cursor-pointer hover:text-gray-600">Search</button>
+      <button @click="searchFriend" class="bg-white text-black py-3 border-y-2 border-white dark:border-black cursor-pointer hover:text-gray-600">Search</button>
    </div>
-   <h3 v-if="session.data.session.user.id !== route.params.id" class="py-4 text-center text-sm s:text-base">@{{route.params.id}} friends</h3>
+   <h3 v-if="session.data.session.user.id !== route.params.id" class="py-4 text-center text-sm s:text-base text-white dark:text-black">@{{route.params.id}} friends</h3>
    <Friends :currentTab="0" :USERID="route.params.id" :searchRes="searchResults" @close-search="searchResults = null" :isLoading="isSearching" />
 </template>
 

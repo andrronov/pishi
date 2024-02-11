@@ -196,14 +196,19 @@ async function fetchPostsComments(postId){
 
 // POST A COMMENT
 async function postComment(postId, post){
-   const commsRes = await usePostComment(supabase, store.getUser().id, postId, commentText.value)
-   if(commsRes){
-      await supabase.from('inbox').insert({text: `@${session.data.session.user.id} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
-      fetchPostsComments(postId)
-      commentText.value = ''
-      openComments[postId] = true
-   } 
-   else{ console.log(commsRes); errorLog.value = commsRes.message }
+   if(commentText.value){
+      errorLog.value = null
+      const commsRes = await usePostComment(supabase, store.getUser().id, postId, commentText.value)
+      if(commsRes){
+         await supabase.from('inbox').insert({text: `@${session.data.session.user.id} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+         fetchPostsComments(postId)
+         commentText.value = ''
+         openComments[postId] = true
+      } 
+      else{ console.log(commsRes); errorLog.value = commsRes.message }
+   } else {
+      errorLog.value = 'You cannot post empty comment'
+   }
 }
 
 // FIND IF LIKED
@@ -222,7 +227,7 @@ async function likePost(postId){
       .select('*, profiles(*), post_likes(*)')
       .order('created_at', {ascending: false})
    posts.value = data
-   await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: userId})
+   await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: session.data.session.user.id})
   } else {
     console.log(error);
   }

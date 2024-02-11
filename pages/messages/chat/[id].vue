@@ -1,7 +1,7 @@
 <template>
   <div class="w-full realtive flex flex-col items-center h-screen">
-    <div @click="toProfile(userProfile.id)" v-if="userProfile" class="w-full cursor-pointer justify-center gap-4 flex flex-row items-center h-10 xs:h-16 bg-black border-2 border-white dark:border-black dark:bg-white hover:bg-gray-500 dark:hover:bg-gray-500">
-      <img :src="userProfile.avatar" class="w-9 h-9 xs:w-11 xs:h-11" alt="avatar">
+    <div @click="toProfile(userProfile.id)" v-if="userProfile" class="w-full cursor-pointer justify-center gap-4 flex flex-row items-center h-12 py-2 xs:h-16 bg-black border-2 border-white dark:border-black dark:bg-white hover:bg-gray-500 dark:hover:bg-gray-500">
+      <img :src="userProfile.avatar" class="w-9 h-9 object-cover xs:w-11 xs:h-11" alt="avatar">
       <div class="flex flex-col items-center text-xs xs:text-base">
         <p class="text-white dark:text-black">{{ userProfile.name }} {{ userProfile.surname }}</p>
         <div class="flex flex-row items-center gap-2" v-if="!isTyping">
@@ -27,8 +27,8 @@
       <p class="bg-black text-gray-500 dark:bg-white p-2" v-if="unReadenMsg.length > 0">{{unReadenMsg.length}}</p>
     </div>
     <div class="flex flex-row items-center w-full">
-      <input v-model="inputMessage" @keydown.enter="sendMessage" @input="userTyping" type="text" class="p-1 text-black dark:text-white dark:bg-black w-full">
-      <button @click="sendMessage" class="py-1 w-24 hover:bg-gray-500 bg-black text-white dark:bg-white dark:text-black">Send</button>
+      <input v-model="inputMessage" @keydown.enter="sendMessage" @input="userTyping" type="text" class="p-1 text-black w-full">
+      <button @click="sendMessage" class="py-1 w-24 hover:bg-gray-500 dark:bg-black dark:text-white bg-white border-x-2 border-black text-black">Send</button>
     </div>
   </div>
 </template>
@@ -114,8 +114,6 @@ async function sendMessage(){
       inputMessage.value = null
       scrollChat()
     }
-  } else {
-    console.log('xxx');
   }
 }
 

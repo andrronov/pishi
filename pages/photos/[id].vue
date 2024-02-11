@@ -1,5 +1,5 @@
 <template>
-   <div v-if="true">
+   <div>
      <div class="relative z-10" @close="navigateTo('/photos')">
        <div>
          <div class="fixed inset-0 bg-gray-900 dark:bg-gray-400 bg-opacity-75 transition-opacity"/>
@@ -10,7 +10,7 @@
              <div v-for="(photo, index) in images" :key="index" class="flex flex-col px-4 relative justify-center items-center snap-always h-full snap-center shrink-0 w-full">
                 <div class="bg-black dark:bg-white relative z-50 flex flex-col gap-4 justify-center items-center transform overflow-hidden text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                    <div @click="navigateTo(`/profile/${photo.profiles.id}`)" class="flex flex-row items-center self-start ml-5 mt-4 bg-black dark:bg-white gap-2">
-                      <img :src="photo.profiles.avatar" class="w-10 h-10" alt="">
+                      <img :src="photo.profiles.avatar" class="w-10 h-10 object-cover" alt="">
                       <div class="flex flex-col text-xs xs:text-sm">
                         <p class="text-gray-300 dark:text-gray-700">{{ photo.profiles.id }}</p>
                         <p class="text-gray-500">{{ formatTimeAgo(new Date(photo.created_at)) }}  #{{ photo.id }}</p>
@@ -25,11 +25,11 @@
                         </h2>
                      </div>
                   <div v-if="photo.photos_likes" class="flex flex-row items-center justify-between mb-4 mt-2 self-center w-full">
-                     <div v-if="!photo.photos_likes.find(islike)" @click="likePhoto(photo.id, photo.author)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-black border-white dark:border-black text-white dark:text-black">
+                     <div v-if="!photo.photos_likes.find(islike)" @click="likePhoto(photo.id, photo.author)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-white border-white dark:border-black text-black dark:text-black">
                         <NuxtIcon name="like" class="" />
                         <p class="text-xs">{{ photo.photos_likes.length }}</p>
                      </div>
-                     <div v-if="photo.photos_likes.find(islike)" @click="unlikePhoto(photo.id)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-white border-white dark:border-black text-black dark:text-black">
+                     <div v-if="photo.photos_likes.find(islike)" @click="unlikePhoto(photo.id)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-black border-white dark:border-black text-white dark:text-white">
                         <NuxtIcon name="like" class="" />
                         <p class="text-xs">{{ photo.photos_likes.length }}</p>
                      </div>
@@ -43,6 +43,7 @@
             <div v-if="isLoadMore" class="h-48 w-full z-50 bottom-0 -mt-36 bg-red-500 opacity-0" ref="el">aaaaa</div>
             <p v-if="noPhotos" class="text-white dark:text-black text-xl">That's all :(</p>
          </div>
+         <UISpinner v-else />
       </div>
    </div>
 </div>
@@ -123,7 +124,8 @@ function islike(el){
 async function likePhoto(photoId, photoAuthor){
    const {error} = await supabase.from('photos_likes').insert({user_id: session.data.session.user.id, photo_id: photoId})
    if(!error){
-      loadPhotos()
+      images.value = null
+      images.value = (await supabase.from('random_photos').select('*, profiles(*), photos_likes(*)')).data
       await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your photo #${photoId}`, user_id: photoAuthor})
    } else{
       eRror.value = error
@@ -134,7 +136,8 @@ async function likePhoto(photoId, photoAuthor){
 async function unlikePhoto(photoId){
    const {error} = await supabase.from('photos_likes').delete().eq('photo_id', photoId).eq('user_id', session.data.session.user.id)
    if(!error){
-      loadPhotos()
+      images.value = null
+      images.value = (await supabase.from('random_photos').select('*, profiles(*), photos_likes(*)')).data
    } else{
       eRror.value = error
       throw new Error(error)

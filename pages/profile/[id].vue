@@ -6,7 +6,7 @@
         <h1 class="text-base xs:text-xl text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
         <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
       </div>
-      <div @click="navigateTo(`/friends/${user[0].id}`)" v-if="userFollowers && userFollowings" class="flex flex-row my-4 cursor-pointer self-center gap-4">
+      <div @click="navigateTo(`/friends/${user[0].id}`)" v-if="userFollowers && userFollowings" class="flex flex-row my-4 cursor-pointer self-center gap-4 text-white dark:text-black">
         <div class="flex flex-col items-center">
           <p>Subs</p>
           <p>{{ userFollowers.length }}</p>
@@ -22,10 +22,10 @@
       <h1 class="text-base xs:text-xl self-center text-white dark:text-black">{{user[0].name}} {{user[0].surname}}</h1>
       <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
     </div>
-    <div class="flex flex-row items-center justify-between mt-4">
+    <div class="flex flex-col items-center justify-between mt-4">
       <div class="flex flex-row items-center gap-2 my-2">
-        <NuxtIcon name="info"></NuxtIcon>
-        <p>{{ user[0].profile_status }}</p>
+        <NuxtIcon name="info" class="text-white dark:text-black"></NuxtIcon>
+        <p class="text-white dark:text-black">{{ user[0].profile_status }}</p>
       </div>
       <OnlineStatus :prmtrs="route.params.id" />
     </div>
@@ -42,7 +42,7 @@
    <button v-if="isMyProfile" @click="profileModal = true" class="p-3 bg-white dark:bg-black text-black dark:text-white mt-1 hover:bg-gray-500" :class="defaultTransition">Change profile</button>
 
    <!-- photos -->
-   <div v-if="userPhotos">
+   <div v-if="userPhotos" class="text-white dark:text-black">
       <h3 class="mt-4 text-xl mb-4">Photos</h3>
     <div class="flex flex-col bg-gray-800 dark:bg-gray-200 border-y-2 border-white dark:border-black py-2 overflow-x-auto">
       <div class="flex flex-row items-center gap-2">
@@ -52,7 +52,7 @@
    </div>
 
    <!-- posts -->
-   <div v-if="userPosts">
+   <div v-if="userPosts" class="text-white dark:text-black">
     <h3 class="mt-4 text-xl mb-2">Posts</h3>
       <div v-for="(post, index) in userPosts" :key="index">
         <Post @delete="deletePost(post.id)" :isMyPage="isMyProfile">
@@ -110,7 +110,7 @@
                          @{{ comm.profiles.id }}
                          | {{ formatTimeAgo(new Date(comm.created_at)) }}
                       </p>
-                      <p class="mt-1 text-xs leading-5 text-gray-200 dark:text-gray-900">
+                      <p class="mt-1 text-xs leading-5 font-medium text-gray-200 dark:text-black">
                          {{ comm.text }}
                       </p>
                    </div>

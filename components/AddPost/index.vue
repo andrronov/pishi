@@ -20,7 +20,7 @@
                              <label for="username" class="block text-sm sm:text-xl font-medium leading-6">Write a title</label>
                              <div class="mt-2">
                                <div class="flex shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-800 focus-within:ring-2 focus-within:ring-inset focus-within:ring-gray-600 sm:max-w-md">
-                                 <input v-model="postTitle" type="text" name="username" id="username" autocomplete="username" class="block flex-1 w-full border-0 bg-transparent py-1.5 pl-1  placeholder: focus:ring-0 sm:text-sm sm:leading-6" />
+                                 <input v-model="postTitle" type="text" name="username" id="username" autocomplete="username" class="block flex-1 w-full border-0 bg-transparent py-1.5 px-1  placeholder: focus:ring-0 sm:text-sm sm:leading-6" />
                                </div>
                              </div>
                            </div>
@@ -28,7 +28,7 @@
                            <div class="col-span-full">
                              <label for="about" class="block text-sm sm:text-xl font-medium leading-6 ">Write a story</label>
                              <div class="mt-2">
-                               <textarea v-model="postText" id="about" name="about" rows="5" class="block w-full bg-black dark:bg-white border-0 py-1.5  shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-800 placeholder: focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" />
+                               <textarea v-model="postText" id="about" name="about" rows="5" class="block w-full bg-black dark:bg-gray-100 border-0 py-1.5 px-1  shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-800 placeholder: focus:ring-2 focus:ring-inset focus:ring-gray-600 sm:text-sm sm:leading-6" />
                              </div>
                            </div>
                  
@@ -89,12 +89,14 @@ onClickOutside(target, event => emit('closeModal'))
  const imgLoad = ref(false)
  const success = ref(false)
  const error = ref(null)
- const postTitle = ref('')
- const postText = ref('')
+ const postTitle = ref(null)
+ const postText = ref(null)
  const postPhoto = ref(null)
 
  function createPost(){
+  if(postTitle.value || postText.value || postPhoto.value){
    loading.value = true
+   error.value = false
    supabase.from('posts').insert({
       author: session.data.session.user.id,
       title: postTitle.value,
@@ -118,8 +120,11 @@ onClickOutside(target, event => emit('closeModal'))
             error.value = null
          }, 5000);
          throw new Error(res.error)
-      }
+      } 
    })
+  } else {
+    error.value = {message: 'You cannot upload empty post'}
+  }
  }
 
 async function addPhoto(ev){

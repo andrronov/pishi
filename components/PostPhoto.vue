@@ -87,10 +87,10 @@
                   Success!
                 </h2>
                 <h2
-                  v-if="error"
+                  v-if="errorLog"
                   class="text-sm dark:bg-black dark:text-red-300 bg-white text-red-700 text-center sm:text-xl leading-7"
                 >
-                  Something went wrong: {{ error.message }}
+                  Something went wrong: {{ errorLog.message }}
                 </h2>
               </div>
               <div
@@ -144,7 +144,7 @@ const session = await supabase.auth.getSession();
 const loading = ref(false)
  const imgLoad = ref(false)
  const success = ref(false)
- const error = ref(null)
+ const errorLog = ref(null)
  const postPhoto = ref(null)
 
  async function addPhoto(ev){
@@ -161,21 +161,27 @@ const loading = ref(false)
 }
 
 async function publishPhoto(){
-   const {data, error} = await supabase.from('photos').insert({author: session.data.session.user.id, img: postPhoto.value})
-   if(!error){
-      success.value = true
-         setTimeout(() =>{
-            success.value = false
-            postPhoto.value = null
-            emit('closeModal')
-         }, 1000)
-   } else {
-         error.value = res.error
-         loading.value = false
-         setTimeout(() => {
-            error.value = null
-         }, 5000);
-         throw new Error(res.error)
-      }
+  if(postPhoto.value){
+    errorLog.value = null
+    const {data, error} = await supabase.from('photos').insert({author: session.data.session.user.id, img: postPhoto.value})
+    if(!error){
+        success.value = true
+          setTimeout(() =>{
+              success.value = false
+              postPhoto.value = null
+              emit('closeModal')
+          }, 1000)
+    } else {
+          errorLog.value = res.error
+          loading.value = false
+          setTimeout(() => {
+              errorLog.value = null
+          }, 5000);
+          throw new Error(res.error)
+        }
+  } else {
+    errorLog.value = {message: 'You cannot upload an empty photo'}
+    throw new Error()
+  }
 }
 </script>

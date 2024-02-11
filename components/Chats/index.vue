@@ -7,7 +7,7 @@
           <img
             :src="chat.profiles.avatar"
             alt="avatar"
-            class="h-12 w-12 flex-none bg-gray-50"
+            class="h-12 w-12 object-cover flex-none bg-gray-50"
           />
         </template>
         <template #name>
@@ -17,7 +17,9 @@
         <!-- /!!!!!!!!!!!/ -->
         <template #nickname> {{ chat.chat_messages[0]?.text }}</template>
         <template #lastSeen>
-          <OnlineStatus :prmtrs="chat.profiles.id" />
+          <div class="mr-2 lg:mr-0">
+            <OnlineStatus :prmtrs="chat.profiles.id" />
+          </div>
         </template>
       </ChatsList>
     </div>

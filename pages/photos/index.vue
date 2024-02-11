@@ -9,7 +9,7 @@
     <UISpinner v-if="photosLoading" />
 
     <p v-if="noPhotos" class="text-xl mt-4 mb-2 text-center text-white dark:text-black">That's all :(</p>
-    <div v-if="isLoadMore" class="h-24 z-50 -mt-8 w-48 bg-red-500 opacity-50" ref="el"></div>
+    <div v-if="isLoadMore" class="h-24 z-50 -mt-8 w-48 bg-red-500 opacity-0" ref="el"></div>
   </div>
   </template>
 

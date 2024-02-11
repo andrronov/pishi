@@ -10,7 +10,7 @@
           <img
             :src="search.avatar"
             alt="avatar"
-            class="h-12 w-12 flex-none bg-gray-50"
+            class="h-12 w-12 object-cover flex-none bg-gray-50"
           />
         </template>
         <template #name>
@@ -19,17 +19,7 @@
         </template>
         <template #nickname> @{{ search.id }} </template>
         <template #lastSeen>
-          <div class="shrink-0 flex flex-col items-end">
-            <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
-              <time>3h ago</time>
-            </p>
-            <div v-else class="mt-1 flex items-center gap-x-1.5">
-              <div class="flex-none rounded-full bg-emerald-500/20 p-1">
-                <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              </div>
-              <p class="text-xs leading-5 text-gray-500">Online</p>
-            </div>
-          </div>
+          <OnlineStatus :prmtrs="search.id" />
         </template>
       </FriendsList>
     </div>
@@ -60,7 +50,7 @@
             <img
               :src="follower.profiles.avatar"
               alt="avatar"
-              class="h-12 w-12 flex-none bg-gray-50"
+              class="h-12 w-12 object-cover flex-none bg-gray-50"
             />
           </template>
           <template #name>
@@ -69,17 +59,7 @@
           </template>
           <template #nickname> @{{ follower.profiles.id }} </template>
           <template #lastSeen>
-            <div class="shrink-0 flex flex-col items-end">
-              <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
-                <time>3h ago</time>
-              </p>
-              <div v-else class="mt-1 flex items-center gap-x-1.5">
-                <div class="flex-none rounded-full bg-emerald-500/20 p-1">
-                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                </div>
-                <p class="text-xs leading-5 text-gray-500">Online</p>
-              </div>
-            </div>
+            <OnlineStatus :prmtrs="follower.profiles.id" />
           </template>
         </FriendsList>
         <h1 v-if="followers.length < 1" class="text-white dark:text-black mt-5">
@@ -107,17 +87,7 @@
           </template>
           <template #nickname> @{{ following.profiles.id }} </template>
           <template #lastSeen>
-            <div class="shrink-0 flex flex-col items-end">
-              <p v-if="false" class="mt-1 text-xs leading-5 text-gray-500">
-                <time>3h ago</time>
-              </p>
-              <div v-else class="mt-1 flex items-center gap-x-1.5">
-                <div class="flex-none rounded-full bg-emerald-500/20 p-1">
-                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                </div>
-                <p class="text-xs leading-5 text-gray-500">Online</p>
-              </div>
-            </div>
+            <OnlineStatus :prmtrs="following.profiles.id" />
           </template>
         </FriendsList>
         <h1 v-if="following.length < 1" class="text-white dark:text-black mt-5">
