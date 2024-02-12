@@ -27,11 +27,11 @@
                         </h2>
                      </div>
                   <div v-if="photo.photos_likes" class="flex flex-row items-center justify-between mb-4 mt-2 self-center w-full">
-                     <div v-if="!photo.photos_likes.find(islike)" @click="likePhoto(photo.id, photo.author)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-white border-white dark:border-black text-black dark:text-black">
+                     <div v-if="photo.photos_likes.find(islike)" @click="unlikePhoto(photo.id)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-white border-white dark:border-black text-black dark:text-black">
                         <NuxtIcon name="like" class="" />
                         <p class="text-xs">{{ photo.photos_likes.length }}</p>
                      </div>
-                     <div v-if="photo.photos_likes.find(islike)" @click="unlikePhoto(photo.id)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-black border-white dark:border-black text-white dark:text-white">
+                     <div v-if="!photo.photos_likes.find(islike)" @click="likePhoto(photo.id, photo.author)" class="flex flex-row items-center gap-1 ml-5 scale-150 p-2 cursor-pointer border bg-black border-white dark:border-black text-white dark:text-white">
                         <NuxtIcon name="like" class="" />
                         <p class="text-xs">{{ photo.photos_likes.length }}</p>
                      </div>
@@ -133,7 +133,9 @@ async function likePhoto(photoId, photoAuthor){
    if(!error){
       images.value = null
       images.value = (await supabase.from('random_photos').select('*, profiles(*), photos_likes(*)')).data
-      await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your photo #${photoId}`, user_id: photoAuthor})
+      if(photoAuthor !== session.data.session.user.id){
+         await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your photo #${photoId}`, user_id: photoAuthor})
+      }
    } else{
       eRror.value = error
       throw new Error(error)

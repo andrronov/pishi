@@ -100,7 +100,9 @@
               <input @keydown.enter="postComment(post.id, post)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
               <button @click="postComment(post.id, post)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
            </div>
-            <UISpinner class="self-center my-4" v-if="loads.loadComms" />
+           <div v-if="loads.loadComms" class="flex flex-col items-center w-full my-4">
+            <UISpinner />
+           </div>
             <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition" :userAvatar="comm.avatar">
               <template #commentData>
                 <div class="flex min-w-0 gap-x-4 cursor-pointer" @click="toUser(comm.profiles.id)">

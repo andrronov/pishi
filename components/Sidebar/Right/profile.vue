@@ -3,8 +3,8 @@
     <!-- card 'inbox' -->
     <SidebarRightFastCard title="Followers" :link="`/friends/${route.params.id}`">
       <SidebarRightItem v-for="(frnd, index) in userFollowers" :key="index">
-         <div @click="navigateTo(`/profile/${frnd.profiles.id}`)" class="flex flex-row justify-between items-center p-2">
-            <img :src="frnd.profiles.avatar" class="w-14 h-14 object-cover" alt="photo">
+         <div @click="navigateTo(`/profile/${frnd.profiles.id}`)" class="flex flex-row justify-between items-center p-1.5">
+            <img :src="frnd.profiles.avatar" class="w-12 h-12 object-cover" alt="photo">
             <div class="flex flex-col">
               <div class="flex flex-row self-end gap-1">
                  <p class="text-center">{{frnd.profiles.name}}</p>
@@ -19,8 +19,8 @@
     <!-- card 'who to add' -->
     <SidebarRightFastCard title="Followings" :link="`/friends/${route.params.id}`">
       <SidebarRightItem v-for="(fllwr, index) in userFollowings" :key="index">
-         <div @click="navigateTo(`/profile/${fllwr.profiles.id}`)" class="flex flex-row justify-between items-center p-2">
-            <img :src="fllwr.profiles.avatar" class="w-14 h-14 object-cover" alt="photo">
+         <div @click="navigateTo(`/profile/${fllwr.profiles.id}`)" class="flex flex-row justify-between items-center p-1.5">
+            <img :src="fllwr.profiles.avatar" class="w-12 h-12 object-cover" alt="photo">
             <div class="flex flex-col">
               <div class="flex flex-row self-end gap-1">
                  <p class="text-center">{{fllwr.profiles.name}}</p>

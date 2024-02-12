@@ -123,23 +123,21 @@ const errorLog = ref()
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 
-// const {data: users} = await useAsyncData('users', async () => client.from('Users').select('*').order('id'))
-
 async function signUp() {
   console.log('data from form', dataFromForm);
   dataFromForm.loading = true
   const { data, error } = await supabase.auth.signUp(
   {
-    // nickname: dataFromForm.username,
     email: dataFromForm.email,
     password: dataFromForm.password,
     options: {
       data: {
         name: dataFromForm.name,
         surname: dataFromForm.surname,
-        avatar: 'https://publicdomainvectors.org/tn_img/abstract-user-flat-4.webp'
+        avatar: 'https://publicdomainvectors.org/tn_img/abstract-user-flat-4.webp',
+        nickname: dataFromForm.username,
       },
-      emailRedirectTo: 'http://loclahost:3004/'
+      emailRedirectTo: '/feed'
     }
   }
 )
@@ -164,14 +162,11 @@ async function signInWithEmail() {
     email: dataFromForm.email,
     password: dataFromForm.password,
   })
-  console.log('data', data?.user?.id)
-  console.log('err', error)
-  if(data){
+  if(!error){
     console.log('successfull sign up')
     navigateTo('/feed')
   }
-console.log('supa user', data)
-  if(error){
+  else{
     errorLog.value = error
     throw error
   }

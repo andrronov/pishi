@@ -40,7 +40,7 @@
                  <!-- POST INTERFACE -->
   
                  <template #postLikes v-if="post.post_likes">
-                  <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
+                  <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id, post.author)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
                      <NuxtIcon name="like" class="" />
                      <p class="text-xs">{{ post.post_likes.length }}</p>
                   </div>
@@ -61,7 +61,9 @@
                      <input @keydown.enter="postComment(post.id, post)" v-model="commentText" type="text" class="w-full p-2 border-2 border-white dark:border-black bg-black dark:bg-white dark:text-black">
                      <button @click="postComment(post.id, post)" class="font-semibold p-2 border-2 border-white dark:border-black" :class="defaultButton">Send</button>
                    </div>
-                    <UISpinner class="self-center my-4" v-if="loads.loadComms" />
+                   <div v-if="loads.loadComms" class="flex flex-col items-center w-full my-4">
+                     <UISpinner />
+                  </div>
                     <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition">
                        <template #commentData>
                            <div class="flex min-w-0 gap-x-4 cursor-pointer" @click="toUser(post.profiles.id)">
@@ -100,7 +102,9 @@
                  </template>
                  </Post>
                </div>
-               <UISpinner v-if="loads.loadPosts" />
+               <div class="flex flex-col items-center w-full my-4">
+                  <UISpinner v-if="loads.loadPosts" />
+               </div>
                <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0" ref="el"></div>
                <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
            <Photo :show="openPhoto" :photo="photoView" @close-modal="openPhoto = false" />
@@ -230,14 +234,16 @@ function isLikedComment(el){
 }
 
 // LIKE/UNLIKE POST
-async function likePost(postId){
+async function likePost(postId, postAuthor){
   const {data, error} = await supabase.from('post_likes').insert({post_id: postId, user_id: session.data.session.user.id}).select()
   if(data){
    const {data, error} = await supabase.from('posts')
       .select('*, profiles(*), post_likes(*)')
       .order('created_at', {ascending: false})
    posts.value = data
-   await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: session.data.session.user.id}   )
+   if(postAuthor !== session.data.session.user.id){
+      await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: postAuthor}   )
+   }
   } else {
     console.log(error);
   }
@@ -304,11 +310,13 @@ async function fetchRecomendations(){
       }
       
    }
+   loads.loadPosts = false
 }
 
 function choosePosts(){
    minRange.value = 0
    maxRange.value = 2
+   noPosts.value = false
    posts.value = []
    if(postSelect.value == 'alls'){
       fetchPosts()

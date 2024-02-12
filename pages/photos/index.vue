@@ -6,7 +6,9 @@
     <div v-if="photos" class="border-x border-white dark:border-black px-1 xs:px-2 overflow-y-auto grid grid-cols-2 xs:grid-cols-3 gap-3 xs:gap-4 place-items-center">
       <img v-for="(photo, index) in photos" :key="index" :src="photo.img" class="object-cover w-full h-fit cursor-pointer hover:border-2 hover:-p-1 hover:border-white" @click="toPhoto(photo)" alt="photo">
     </div>
-    <UISpinner v-if="photosLoading" />
+    <div v-if="photosLoading" class="flex flex-col items-center w-full my-4">
+      <UISpinner />
+   </div>
 
     <p v-if="noPhotos" class="text-xl mt-4 mb-2 text-center text-white dark:text-black">That's all :(</p>
     <div v-if="isLoadMore" class="h-24 z-50 -mt-8 w-48 bg-red-500 opacity-0" ref="el"></div>
