@@ -1,7 +1,13 @@
 <template>
    <div>
       <MainSection @reload-posts="fetchPosts">
-         <FastInbox class="sm:hidden" />
+      <FastInbox class="sm:hidden" />
+         
+      <select @change="choosePosts" v-model="postSelect" id="posts" class="bg-gray-300 mt-3 border border-gray-200 text-gray-800 text-sm focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+      <option value="recs">Recomendations</option>
+      <option value="alls">All posts</option>
+      </select>
+
         <div v-if="posts" class="relative">
   
            <!-- POST CONTENT -->
@@ -95,7 +101,6 @@
                  </Post>
                </div>
                <UISpinner v-if="loads.loadPosts" />
-               
                <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0" ref="el"></div>
                <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
            <Photo :show="openPhoto" :photo="photoView" @close-modal="openPhoto = false" />
@@ -140,6 +145,8 @@ const store = useUserStore();
 let minRange = ref(0)
 let maxRange = ref(2)
 const isLoadMore = ref(false)
+
+const postSelect = ref('recs')
 // ---------------------
 
 // STORE USER DATA
@@ -158,7 +165,9 @@ const { data, pending, error, refresh } = await useAsyncData("", () => {
 const el = ref(null)
 useInfiniteScroll(el, () => {
    isLoadMore.value = false
-   fetchPosts()
+   if(postSelect.value == 'alls'){
+      fetchPosts()
+   }
 })
 
 // FETCH POSTS
@@ -171,6 +180,7 @@ async function fetchPosts(){
       .range(minRange.value, maxRange.value)
    if(!error){
       posts.value.push(...data)
+      console.log(posts.value);
       loads.loadPosts = false
       isLoadMore.value = true
       minRange.value += 3
@@ -227,7 +237,7 @@ async function likePost(postId){
       .select('*, profiles(*), post_likes(*)')
       .order('created_at', {ascending: false})
    posts.value = data
-   await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: session.data.session.user.id})
+   await supabase.from('inbox').insert({text: `@${session.data.session.user.id} liked your post #${postId}`, user_id: session.data.session.user.id}   )
   } else {
     console.log(error);
   }
@@ -276,8 +286,39 @@ async function unlikeComment(comm, postId){
    console.log(error);
 }
 
+async function fetchRecomendations(){
+   loads.loadPosts = true
+   const followings = await useFetchFollowings(supabase, session.data.session.user.id)
+   for(let i = 0; i < followings.length; i++){
+      const {data, error} = await supabase.from('posts').select('*, profiles(*), post_likes(*)')
+      .eq('author', followings[i].whos_following)
+      .order('created_at', {ascending: false})
+      if(!error){
+         posts.value.push(...data)
+      loads.loadPosts = false
+      } else {
+      errorLog.value = error
+      loads.loadPosts = false
+      console.log(error);
+      throw Error(error)
+      }
+      
+   }
+}
+
+function choosePosts(){
+   minRange.value = 0
+   maxRange.value = 2
+   posts.value = []
+   if(postSelect.value == 'alls'){
+      fetchPosts()
+   } else {
+      fetchRecomendations()
+   }
+}
+
 // LOAD POSTS
 onMounted(() => {
-   fetchPosts()
+   fetchRecomendations()
 })
 </script>

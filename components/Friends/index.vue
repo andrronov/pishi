@@ -78,7 +78,7 @@
             <img
               :src="following.profiles.avatar"
               alt="avatar"
-              class="h-12 w-12 flex-none bg-gray-50"
+              class="h-12 w-12 object-cover flex-none bg-gray-50"
             />
           </template>
           <template #name>

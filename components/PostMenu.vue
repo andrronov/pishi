@@ -7,7 +7,7 @@
     </div> -->
 
     <div as="template" v-if="show">
-      <div as="div" class="relative z-10">
+      <div as="div" class="relative z-50">
         <div as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-900 dark:bg-gray-200 bg-opacity-75 dark:bg-opacity-75 transition-opacity" />
         </div>

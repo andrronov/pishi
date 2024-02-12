@@ -8,14 +8,16 @@
        <div class="fixed inset-0 z-10 flex justify-center items-center w-full">
           <div v-if="images" class="flex flex-col h-full relative w-full gap-6 snap-y snap-mandatory overflow-y-scroll items-center justify-center text-center">
              <div v-for="(photo, index) in images" :key="index" class="flex flex-col px-4 relative justify-center items-center snap-always h-full snap-center shrink-0 w-full">
-                <div class="bg-black dark:bg-white relative z-50 flex flex-col gap-4 justify-center items-center transform overflow-hidden text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+               <PostMenu :show="modalMenuOpen" @close-modal="modalMenuOpen = false" :isMyPage="images.find(isMyPhoto)" @delete="deletePhoto(photo)" /> 
+               <div class="bg-black dark:bg-white relative z-50 flex flex-col gap-4 justify-center items-center transform overflow-hidden text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                    <div @click="navigateTo(`/profile/${photo.profiles.id}`)" class="flex flex-row items-center self-start ml-5 mt-4 bg-black dark:bg-white gap-2">
                       <img :src="photo.profiles.avatar" class="w-10 h-10 object-cover" alt="">
                       <div class="flex flex-col text-xs xs:text-sm">
                         <p class="text-gray-300 dark:text-gray-700">{{ photo.profiles.id }}</p>
                         <p class="text-gray-500">{{ formatTimeAgo(new Date(photo.created_at)) }}  #{{ photo.id }}</p>
                       </div>
-                   </div>
+                     </div>
+                     <p @click="modalMenuOpen = true" class="absolute right-5 top-3 z-40 text-white dark:text-black">:</p>
                      <div class="bg-black dark:bg-white px-4 pb-4 pt-3">
                         <div class="sm:flex sm:items-start">
                            <img :src="photo.img" class="shrink-0 w-fit h-auto max-h-96 object-cover shadow-xl bg-white" alt="">
@@ -75,6 +77,11 @@ const images = ref([])
 const minRange = ref(0)
 const maxRange = ref(3)
 const noPhotos = ref(false)
+const modalMenuOpen = ref(false)
+
+function isMyPhoto(photo){
+   return photo.profiles.id == session.data.session.user.id
+}
 
  
 async function loadPhotoURL(){
@@ -143,6 +150,17 @@ async function unlikePhoto(photoId){
       throw new Error(error)
    }
    console.log(error);
+}
+
+async function deletePhoto(photo){
+   const {data, error} = await supabase.from('photos').delete().eq('id', photo.id).eq('author', session.data.session.user.id)
+   if(!error){
+      images.value = []
+      imgLoad.value = true
+      minRange.value = 0
+      maxRange.value = 3
+      loadPhotos()
+   }
 }
 
 watchEffect(() => {
