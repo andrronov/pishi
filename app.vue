@@ -22,7 +22,7 @@ const roomOne = supabase.channel('online')
     })
 
 const userStatus = {
-  user: session.data.session.user.id,
+  user: session.data.session?.user?.id,
   online_at: new Date().toISOString(),
 }
 
