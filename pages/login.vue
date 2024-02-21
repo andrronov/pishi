@@ -213,7 +213,7 @@ async function signUp() {
         avatar: 'https://publicdomainvectors.org/tn_img/abstract-user-flat-4.webp',
         // nickname: dataFromForm.username,
       },
-      emailRedirectTo: '/feed'
+      emailRedirectTo: 'https://pishi.netlify.app/done'
     }
   }
 )

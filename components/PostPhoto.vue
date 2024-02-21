@@ -1,6 +1,6 @@
 <template>
   <div as="template" v-if="props.modalOpen">
-    <div as="div" class="relative z-10" @close="$emit('closeModal')">
+    <div as="div" class="relative z-50" @close="$emit('closeModal')">
       <div
         as="template"
         enter="ease-out duration-300"
