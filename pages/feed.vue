@@ -105,7 +105,7 @@
                <div class="flex flex-col items-center w-full my-4">
                   <UISpinner v-if="loads.loadPosts" />
                </div>
-               <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-50 z-0" ref="el"></div>
+               <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0 z-0" ref="el"></div>
                <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
            <Photo :show="openPhoto" :photo="photoView" @close-modal="openPhoto = false" />
         </div>
