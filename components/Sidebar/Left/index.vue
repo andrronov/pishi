@@ -87,6 +87,7 @@ const user = ref(null)
 const userID = session.data.session.user.id;
 // ------------------------
 console.log(route);
+console.log('aaa', userID);
 
 // STORE USER DATA
 const { data, pending, error, refresh } = await useAsyncData("", () => {
@@ -99,12 +100,6 @@ const { data, pending, error, refresh } = await useAsyncData("", () => {
       } else{console.log('no result')}
    });
 });
-
-// LOG OUT
- async function logOutUser(){
-  await supabase.auth.signOut()
-  navigateTo('/login')
- }
 
 //  TO USER PROFILE
 function toUserProfile(){

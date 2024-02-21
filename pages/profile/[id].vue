@@ -23,7 +23,7 @@
       <h3 class="text-sm xs:text-lg text-center text-gray-400 dark:text-gray-600">@{{ user[0].id }}</h3>
     </div>
     <div class="flex flex-col items-center justify-between mt-4">
-      <div class="flex flex-row items-center gap-2 my-2">
+      <div class="flex flex-row items-center gap-2 my-2" v-if="user[0].profile_status">
         <NuxtIcon name="info" class="text-white dark:text-black"></NuxtIcon>
         <p class="text-white dark:text-black">{{ user[0].profile_status }}</p>
       </div>
@@ -79,7 +79,7 @@
               <img @click="openImg(post.img)" :src="post.img" alt="" class="cursor-pointer mx-auto">
           </template>
           <template #postLikes v-if="post.post_likes">
-            <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
+            <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id, post)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
                <NuxtIcon name="like" class="" />
                <p class="text-xs">{{ post.post_likes.length }}</p>
             </div>
@@ -241,7 +241,9 @@ async function postComment(postId, post){
   // console.log(post);
    const commsRes = await usePostComment(supabase, store.getUser().id, postId, commentText.value)
    if(commsRes == "true"){
-     await supabase.from('inbox').insert({text: `@${sessionUserId} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+    if(post.author !== session.data.session.user.id){
+      await supabase.from('inbox').insert({text: `@${sessionUserId} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+    }
      fetchPostsComments(postId)
     commentText.value = ''
     openComments[postId] = true
@@ -318,11 +320,13 @@ async function unSubUser(userId){
 }
 
 // LIKE/UNLIKE POST
-async function likePost(postId){
+async function likePost(postId, post){
   const {data, error} = await supabase.from('post_likes').insert({post_id: postId, user_id: sessionUserId})
   if(!error){
     fetchUserPosts()
-    await supabase.from('inbox').insert({text: `@${sessionUserId} liked your post`, user_id: route.params.id})
+    if(post.author !== session.data.session.user.id){
+      await supabase.from('inbox').insert({text: `@${sessionUserId} liked your post`, user_id: route.params.id})
+    }
   } else {
     console.log(error);
   }

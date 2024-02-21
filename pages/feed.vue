@@ -16,7 +16,7 @@
               <Post>
                  <template #postData>
                      <div class="flex flex-row items-center gap-4 cursor-pointer" @click="toUser(post.profiles.id)">
-                        <img :src="post.profiles.avatar" class="w-12 object-cover h-12" alt="avatar">
+                        <img :src="post.profiles.avatar" class="w-12 object-cover z-20 h-12" alt="avatar">
                         <div class="flex flex-col">
                            <p class="font-medium">
                               @{{ post.profiles.id }}</p>
@@ -34,24 +34,24 @@
                     <p>{{ post.text }}</p>
                  </template>
                  <template v-if="post.img" #postImage>
-                    <img @click="openImg(post.img)" :src="post.img" alt="post img" class="cursor-pointer mx-auto">
+                    <img @click="openImg(post.img)" :src="post.img" alt="post img" class="cursor-pointer z-20 mx-auto">
                   </template>
   
                  <!-- POST INTERFACE -->
   
                  <template #postLikes v-if="post.post_likes">
-                  <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id, post.author)" :class="defaultButton" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
+                  <div v-if="!post.post_likes.find(islike)" @click="likePost(post.id, post.author)" :class="defaultButton" class="flex z-20 flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 cursor-pointer">
                      <NuxtIcon name="like" class="" />
                      <p class="text-xs">{{ post.post_likes.length }}</p>
                   </div>
-                  <div v-if="post.post_likes.find(islike)" @click="unlikePost(post.id)" class="flex flex-row items-center gap-1 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
+                  <div v-if="post.post_likes.find(islike)" @click="unlikePost(post.id)" class="flex flex-row items-center gap-1 z-20 scale-150 p-1 ml-3 mr-6 border-x border-y border-white dark:border-black bg-black text-white dark:bg-white dark:text-black cursor-pointer hover:bg-gray-700 hover:text-gray-300 dark:hover:bg-gray-300 dark:hover:text-gray-700">
                      <NuxtIcon name="like" class="" />
                      <p class="text-xs">{{ post.post_likes.length }}</p>
                   </div>
                </template>
 
                  <template #commentsButton>
-                    <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" :class="defaultButton" class="p-1 scale-150 mr-5" />
+                    <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" :class="defaultButton" class="p-1 z-20 scale-150 mr-5" />
                  </template>
                  <template #shareButton>
                     <NuxtIcon name="share" :class="defaultButton" class="p-1 scale-150" />
@@ -66,7 +66,7 @@
                   </div>
                     <PostComment v-for="(comm, index) in postComments[post.id]" :key="index" :class="defaultTransition">
                        <template #commentData>
-                           <div class="flex min-w-0 gap-x-4 cursor-pointer" @click="toUser(post.profiles.id)">
+                           <div class="flex min-w-0 z-20 gap-x-4 cursor-pointer" @click="toUser(post.profiles.id)">
                               <img class="h-12 w-12 object-cover flex-none bg-gray-50" :src="comm.profiles.avatar" alt="avatar" />
                               <div class="min-w-0 flex-auto">
                                  <p class="text-sm leading-6 text-gray-400 dark:text-gray-600">
@@ -80,7 +80,7 @@
                            </div>
                         </template>
                           <template #likes>
-                           <div v-if="comm.post_comment_likes.find(isLikedComment)" class="shrink-0 flex flex-col items-center cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300" @click="unlikeComment(comm, post.id)">
+                           <div v-if="comm.post_comment_likes.find(isLikedComment)" class="shrink-0 z-20 flex flex-col items-center cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300" @click="unlikeComment(comm, post.id)">
                               <p class="text-sm text-blue-400 dark:text-blue-600">
                                 {{ comm?.post_comment_likes.length }}
                               </p>
@@ -88,11 +88,11 @@
                                 <NuxtIcon name="heart" />
                               </p>
                             </div>
-                           <div v-if="!comm.post_comment_likes.find(isLikedComment)" class="shrink-0 flex flex-col items-center cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300" @click="likeComment(comm, post.id)">
+                           <div v-if="!comm.post_comment_likes.find(isLikedComment)" class="shrink-0 flex z-20 flex-col items-center cursor-pointer hover:bg-gray-700 dark:hover:bg-gray-300" @click="likeComment(comm, post.id)">
                               <p class="text-sm text-gray-400 dark:text-gray-600">
                                 {{ comm?.post_comment_likes.length }}
                               </p>
-                              <p class="mt-1 text-2xl leading-5 text-gray-500">
+                              <p class="mt-1 text-2xl leading-5 text-gray-500 z-20">
                                 <NuxtIcon name="heart" />
                               </p>
                             </div>
@@ -105,7 +105,7 @@
                <div class="flex flex-col items-center w-full my-4">
                   <UISpinner v-if="loads.loadPosts" />
                </div>
-               <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0" ref="el"></div>
+               <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-50 z-0" ref="el"></div>
                <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
            <Photo :show="openPhoto" :photo="photoView" @close-modal="openPhoto = false" />
         </div>
@@ -214,7 +214,9 @@ async function postComment(postId, post){
       errorLog.value = null
       const commsRes = await usePostComment(supabase, store.getUser().id, postId, commentText.value)
       if(commsRes){
-         await supabase.from('inbox').insert({text: `@${session.data.session.user.id} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+         if(post.author !== session.data.session.user.id){
+            await supabase.from('inbox').insert({text: `@${session.data.session.user.id} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+         }
          fetchPostsComments(postId)
          commentText.value = ''
          openComments[postId] = true

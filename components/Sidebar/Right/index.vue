@@ -45,7 +45,6 @@ async function randomizeProfiles(){
    const {data, error} = await supabase.from('random_profiles').select().limit(3)
    if(!error){
       possibleFriendsArray.value = data
-      console.log(possibleFriendsArray.value);
    }
 }
 

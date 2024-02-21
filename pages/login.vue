@@ -8,7 +8,7 @@
      <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
        <form class="space-y-6">
          <div>
-           <label class="block text-sm font-medium leading-6">Username</label>
+           <label class="block text-sm font-medium leading-6">Email</label>
            <div class="mt-2">
              <input v-model="dataFromForm.email" name="email" type="email" autocomplete="email" required="" class="block w-full bg-black rounded-md border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
@@ -63,12 +63,12 @@
              <input v-model="dataFromForm.surname" required="" class="block w-full rounded-md bg-black text-white border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
          </div>
-         <div>
+         <!-- <div>
            <label class="block text-sm font-medium leading-6">Nickname</label>
            <div class="mt-2">
              <input v-model="dataFromForm.username" required="" class="block w-full rounded-md bg-black text-white border-0 py-1.5 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-gray-500 sm:text-sm sm:leading-6" />
            </div>
-         </div>
+         </div> -->
          <div>
            <label for="email" class="block text-sm font-medium leading-6">Email address</label>
            <div class="mt-2">
@@ -189,7 +189,7 @@ const dataFromForm = reactive({
    email: '',
    password: '',
    secondPassword: '',
-   username: '',
+  //  username: '',
    loading: false
 })
 const page = ref('login')
@@ -201,7 +201,6 @@ const route = useRoute()
 const isPasswordsWrong = ref(false)
 
 async function signUp() {
-  console.log('data from form', dataFromForm);
   dataFromForm.loading = true
   const { data, error } = await supabase.auth.signUp(
   {
@@ -212,19 +211,16 @@ async function signUp() {
         name: dataFromForm.name,
         surname: dataFromForm.surname,
         avatar: 'https://publicdomainvectors.org/tn_img/abstract-user-flat-4.webp',
-        nickname: dataFromForm.username,
+        // nickname: dataFromForm.username,
       },
       emailRedirectTo: '/feed'
     }
   }
 )
-if(data){
+if(!error){
   dataFromForm.loading = false
   checkMailMessage.value = true
 }
-//   console.log('data', data?.user?.id)
-//   console.log('err', error)
-// console.log('supa user', data)
 
   if(error){
     errorLog.value = error
@@ -234,7 +230,6 @@ if(data){
 
 
 async function signInWithEmail() {
-  console.log('dataForm', dataFromForm)
   const { data, error } = await supabase.auth.signInWithPassword({
     email: dataFromForm.email,
     password: dataFromForm.password,
