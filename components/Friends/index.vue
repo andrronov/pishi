@@ -58,9 +58,9 @@
             {{ follower.profiles.surname }}
           </template>
           <template #nickname> @{{ follower.profiles.id }} </template>
-          <template #lastSeen>
+          <!-- <template #lastSeen>
             <OnlineStatus :prmtrs="follower.profiles.id" />
-          </template>
+          </template> -->
         </FriendsList>
         <h1 v-if="followers.length < 1" class="text-white dark:text-black mt-5">
           Don't have followers
@@ -86,9 +86,9 @@
             {{ following.profiles.surname }}
           </template>
           <template #nickname> @{{ following.profiles.id }} </template>
-          <template #lastSeen>
+          <!-- <template #lastSeen>
             <OnlineStatus :prmtrs="following.profiles.id" />
-          </template>
+          </template> -->
         </FriendsList>
         <h1 v-if="following.length < 1" class="text-white dark:text-black mt-5">
           Don't have followers
