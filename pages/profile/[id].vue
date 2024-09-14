@@ -275,11 +275,8 @@ async function fetchFollowings(){
 }
 // FETCH FOLLOWERS
 async function fetchFollowers() {
-  function isFollowed(element) {
-  return element.who_followed == sessionUserId
-}
   userFollowers.value = await useFetchFollowers(supabase, route.params.id)
-  isSubed.value = userFollowers.value.find(isFollowed)
+  isSubed.value = userFollowers.value.find(el => el.who_followed == sessionUserId)
 }
 // FIND IF LIKED
 function islike(el){
@@ -391,13 +388,13 @@ function toPhoto(photo){
 
 onMounted(() => {
   fetchUser()
-})
-watchEffect(() => {
   checkIsMyProfile()
-  fetchUserPosts()
   fetchUserPhotos()
   fetchFollowings()
   fetchFollowers()
+})
+watchEffect(() => {
+  fetchUserPosts()
 })
 </script>
 

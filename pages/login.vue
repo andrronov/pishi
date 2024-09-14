@@ -189,7 +189,6 @@ const dataFromForm = reactive({
    email: '',
    password: '',
    secondPassword: '',
-  //  username: '',
    loading: false
 })
 const page = ref('login')
@@ -197,7 +196,7 @@ const checkMailMessage = ref(false)
 const errorLog = ref()
 
 const supabase = useSupabaseClient()
-const route = useRoute()
+const userStore = useUserStore()
 const isPasswordsWrong = ref(false)
 
 async function signUp() {
@@ -210,8 +209,6 @@ async function signUp() {
       data: {
         name: dataFromForm.name,
         surname: dataFromForm.surname,
-        avatar: 'https://publicdomainvectors.org/tn_img/abstract-user-flat-4.webp',
-        // nickname: dataFromForm.username,
       },
       emailRedirectTo: 'https://pishi.netlify.app/done'
     }
@@ -235,7 +232,7 @@ async function signInWithEmail() {
     password: dataFromForm.password,
   })
   if(!error){
-    console.log('successfull sign up')
+    userStore.updateUser(data.user)
     navigateTo('/feed')
   }
   else{

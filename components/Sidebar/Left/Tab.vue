@@ -24,7 +24,6 @@ const pIsActive = defineProps({
     default: '/'
   }
 })
-const isActive = computed(() => pIsActive.active ? 'bg-white text-black dark:bg-black dark:text-white' : 'font-normal dark:text-black text-white')
 </script>
 
 <style>

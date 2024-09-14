@@ -145,7 +145,7 @@ const photoView = ref(null)
 const supabase = useSupabaseClient();
 const session = await supabase.auth.getSession();
 const store = useUserStore();
-
+console.log('STORE !!!!!! --- ', store.$state, 'GET USER --- ', store.getUser());
 let minRange = ref(0)
 let maxRange = ref(2)
 const isLoadMore = ref(false)

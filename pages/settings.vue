@@ -12,7 +12,6 @@
 </template>
 
 <script setup>
-const store = useUserStore()
 const isLight = ref(false)
 const supabase = useSupabaseClient()
 
@@ -29,7 +28,6 @@ function setMode(){
 
 async function logOutUser(){
   const isOut = confirm('Are you sure you want to log out?')
-  console.log(isOut);
   if(isOut){
    await supabase.auth.signOut()
    navigateTo('/login')
