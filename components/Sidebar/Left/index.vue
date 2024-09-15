@@ -17,7 +17,7 @@
  <script setup>
 const {defaultTransition} = useTailwindConfig()
 
-// исправить ссылки для messages + freinds
+// исправить ссылки для freinds
 const sidebarTabs = ref([
   {icon: 'home', name: 'Feed', link: '/feed'},
   {icon: 'bell', name: 'Inbox', link: '/inbox'},

@@ -35,39 +35,30 @@ const loads = reactive({
   chats: false
 })
 const supabase = useSupabaseClient();
-const session = await supabase.auth.getSession();
-const userStore = useUserStore();
-const sessUserId = session.data.session.user.id
+const userId = ref(null)
 
 const chats = ref([])
 // ---------------------------------------
 
 async function getChats(){
   loads.chats = true
-  const chatData = await getUserChats(supabase, userStore.getUser().id)
-  console.log(chatData);
-  // const chatData = await useFetch('/api/getUserChats')
-  // console.log(chatData);
-  //  const chatsRes = [await supabase.from('chats').select('id, user1_id, user2_id, profiles:user2_id(*), chat_messages:id(*)').eq('user1_id', sessUserId).limit(1, { referencedTable: 'chat_messages' }).order('created_at', {ascending: false, referencedTable: 'chat_messages'}), 
-  //              await supabase.from('chats').select('id, user1_id, user2_id, profiles:user1_id(*), chat_messages:id(*)').eq('user2_id', sessUserId).limit(1, { referencedTable: 'chat_messages' }).order('created_at', {ascending: false, referencedTable: 'chat_messages'})]
-  //  if(chatsRes){
-  //     chatsRes.forEach(res => {
-  //        chats.value.push(...res.data)
-  //     })
-  //     console.log(chats.value);
-  //     loads.chats = false
-  //  } else {
-  //   loads.chats = false
-  //     console.log('error');
-  //  }
+  try {
+    const chatData = await getUserChats(supabase, userId.value)
+    for(let chat of chatData) {
+      chats.value.push(...chat.data)
+    }
+  } catch (error) {
+    console.error(error)
+  } finally {loads.chats = false}
 }
 
 function toChat(chatId){
   navigateTo(`/messages/chat/${chatId}`);
 }
 
-watchEffect(() => {
-   getChats()
+onMounted(() => {
+  userId.value = localStorage.getItem('userId')
+  getChats()
 })
 </script>
 
