@@ -10,7 +10,6 @@
 
 <script setup>
 const {defaultTransition} = useTailwindConfig()
-const supabase = useSupabaseClient()
 
 const props = defineProps({
    title: {

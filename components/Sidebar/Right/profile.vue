@@ -4,7 +4,7 @@
     <SidebarRightFastCard title="Followers" :link="`/friends/${route.params.id}`">
       <SidebarRightItem v-for="(frnd, index) in userFollowers" :key="index">
          <div @click="navigateTo(`/profile/${frnd.profiles.id}`)" class="flex flex-row justify-between items-center p-1.5">
-            <img :src="frnd.profiles.avatar" class="w-12 h-12 object-cover" alt="photo">
+            <img :src="frnd.profiles.avatar" class="w-11 h-11 object-cover" alt="photo">
             <div class="flex flex-col">
               <div class="flex flex-row self-end gap-1">
                  <p class="text-center">{{frnd.profiles.name}}</p>
@@ -20,7 +20,7 @@
     <SidebarRightFastCard title="Followings" :link="`/friends/${route.params.id}`">
       <SidebarRightItem v-for="(fllwr, index) in userFollowings" :key="index">
          <div @click="navigateTo(`/profile/${fllwr.profiles.id}`)" class="flex flex-row justify-between items-center p-1.5">
-            <img :src="fllwr.profiles.avatar" class="w-12 h-12 object-cover" alt="photo">
+            <img :src="fllwr.profiles.avatar" class="w-11 h-11 object-cover" alt="photo">
             <div class="flex flex-col">
               <div class="flex flex-row self-end gap-1">
                  <p class="text-center">{{fllwr.profiles.name}}</p>
@@ -48,9 +48,8 @@ async function fetchUserSubs() {
     .limit(3);
   if (!error) {
     userFollowers.value = data;
-    console.log(userFollowers.value);
   } else {
-    throw new Error(error);
+    console.error(error);
   }
 }
 
@@ -62,14 +61,13 @@ async function fetchUserFollowings(){
   .limit(3)
   if(!error){
      userFollowings.value = data
-     console.log(userFollowings.value);
   } else{
    console.log(error);
-   throw new Error(error)
   }
 }
 
 watchEffect(() => {
+  console.log(route.params.id);
    fetchUserSubs()
    fetchUserFollowings()
 })

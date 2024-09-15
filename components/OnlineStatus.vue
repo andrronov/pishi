@@ -24,22 +24,6 @@ const props = defineProps({
    }
 })
 
-// function checkOnline(param){
-//    const roomOne = supabase.channel('online')
-//   roomOne
-//     .on('presence', { event: 'sync' }, () => {
-//       const newState = roomOne.presenceState()
-//       // console.log('state', newState);
-//       const usersOnline = []
-//       for(const id in roomOne.presenceState()){
-//         usersOnline.push(roomOne.presenceState()[id][0].user)
-//       }
-//       console.log('online', usersOnline, 'aaa', roomOne.presenceState());
-//       isUserOnline.value = usersOnline.some(user => {return user == param})
-//     })
-//     .subscribe()
-// }
-
 function checkOnline(param){
    const roomOne = supabase.channel('online')
    roomOne
@@ -47,14 +31,12 @@ function checkOnline(param){
        const newState = roomOne.presenceState()
        const usersOnline = []
        for (const id in newState) {
-         // Предполагаем, что newState[id] это массив сессий для каждого пользователя
          newState[id].forEach(session => {
            if (!usersOnline.includes(session.user)) {
              usersOnline.push(session.user)
            }
          });
        }
-       console.log('online', usersOnline, 'aaa', newState);
        isUserOnline.value = usersOnline.some(user => user === param)
      })
      .subscribe()

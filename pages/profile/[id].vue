@@ -161,7 +161,6 @@ definePageMeta({
    layout: 'profile'
 })
 
-// VARIABLES
 const loads = reactive({
    loadPosts: false,
    loadComms: {},

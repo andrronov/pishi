@@ -10,9 +10,9 @@ dist
 node_modules
 
 # Logs
-TODO
 logs
 *.log
+todo.txt
 
 # Misc
 .DS_Store
