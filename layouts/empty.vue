@@ -7,13 +7,8 @@
 </template>
 
 <script setup>
-const store = useUserStore()
 const lightMode = ref(false)
-
-onMounted(() => {
-   const localData = localStorage.getItem('mode') 
-   lightMode.value = JSON.parse(localData)
-})
+onMounted(() => lightMode.value = JSON.parse(localStorage.getItem('mode')))
 </script>
 
 <style>

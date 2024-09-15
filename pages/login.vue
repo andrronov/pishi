@@ -232,7 +232,7 @@ async function signInWithEmail() {
     password: dataFromForm.password,
   })
   if(!error){
-    userStore.updateUser(data.user)
+    userStore.setUser(data.user)
     navigateTo('/feed')
   }
   else{

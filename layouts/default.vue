@@ -28,11 +28,21 @@
  </template>
 
 <script setup>
-const store = useUserStore()
+const userId = ref(null)
 const lightMode = ref(false)
+const supabase = useSupabaseClient()
 
 onMounted(() => {
-   const localData = localStorage.getItem('mode') 
-   lightMode.value = JSON.parse(localData)
+   userId.value = localStorage.getItem('userId')
+   lightMode.value = JSON.parse(localStorage.getItem('mode'))
+})
+
+// STORE USER DATA
+watchEffect(async() => {
+   if(userId.value && !useUserStore().getUser().id){
+      console.log('getting...');
+      const { data } = await supabase.from("profiles").select().eq("id", userId.value)
+      useUserStore().setUser(data[0])
+   }
 })
 </script>

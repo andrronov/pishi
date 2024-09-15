@@ -10,6 +10,7 @@
         </NuxtLink>
       </div>
 
+      <SidebarLeftUser />
    </div>
  </template>
  

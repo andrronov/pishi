@@ -29,5 +29,6 @@ REFACTOR TODO
 4 Разобраться с SidebarLeftUser (получение данных - либо запросом, либо из стора)
 
 ; Мб записывать юзера в стор еще при входе
+Логику записи стора перенести в корень
 
 https://dev.to/dailydevtips1/making-a-fullscreen-vertical-slider-with-tailwind-and-eleventy-1gk6

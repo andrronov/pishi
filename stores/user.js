@@ -5,7 +5,8 @@ export const useUserStore = defineStore('user', {
       uData: {},
    }),
    actions: {
-      updateUser(userData){
+      setUser(userData){
+         localStorage.setItem('userId', userData.id)
          this.uData = userData
       },
       getUser(){
