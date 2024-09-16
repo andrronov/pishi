@@ -16,6 +16,7 @@
             </div>
          </div>
         </div>
+        <!-- <PostLike /> -->
         <!-- <slot name="likes"></slot> -->
       </li>
     </ul>
@@ -29,4 +30,6 @@ import { formatTimeAgo } from '@vueuse/core'
 const props = defineProps({
   comm: {type: Object}
 })
+
+console.log(props.comm);
  </script>

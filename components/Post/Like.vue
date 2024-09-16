@@ -10,7 +10,7 @@
 const { defaultButton } = useTailwindConfig()
 
 const props = defineProps({
-   post: {type: Array}
+   post: {type: Object}
 })
 
 const userId = ref(null)

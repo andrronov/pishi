@@ -2,6 +2,8 @@
    <div class="relative flex flex-col w-full gap-4 p-4 my-4 border-y-2 border-white dark:border-black bg-gray-800 text-white dark:bg-gray-200 dark:text-black" id="wrapper">
       
       <UILoading v-if="loading" />
+      <Error v-if="errorLog" :error="errorLog" />
+      <Photo :show="showImg" :photo="post.img" @close-modal="showImg = false" />
 
       <div class="flex w-full flex-row justify-between relative items-center mb-6">
          <div class="flex flex-row items-center gap-4">
@@ -25,11 +27,11 @@
 
       <p>{{ post.text }}</p>
       
-      <img v-if="post.img" @click="openImg(post.img)" :src="post.img" alt="post img" class="cursor-pointer z-20 mx-auto">
+      <img v-if="post.img" @click="showImg = true" :src="post.img" alt="post img" class="cursor-pointer z-20 mx-auto">
       
       <div class="flex flex-row h-auto items-center">
          <PostLike :post="post" />
-         <NuxtIcon @click="fetchPostsComments(post.id)" name="comment" :class="defaultButton" class="p-1 z-20 scale-150 mr-5" />
+         <NuxtIcon @click="openPostComments(post.id)" name="comment" :class="defaultButton" class="p-1 z-20 scale-150 mr-5" />
          <!-- <NuxtIcon name="share" :class="defaultButton" class="p-1 scale-150" /> -->
       </div>
       
@@ -47,10 +49,13 @@
 import { formatTimeAgo } from '@vueuse/core'
 
 const { defaultButton, defaultTransition } = useTailwindConfig()
-const supabase = useSupabaseClient()
 const postComments = ref(null)
-const loading = ref(false)
 const showPostMenu = ref(false)
+const showImg = ref(false)
+const commentText = ref('')
+const supabase = useSupabaseClient()
+const loading = ref(false)
+const errorLog = ref(null)
 
 const userId = computed(() => localStorage.getItem('userId'))
 
@@ -58,13 +63,31 @@ const props = defineProps({
    post: {type: Object}
 })
 
-// FETCH COMMENTS
-async function fetchPostsComments(postId){
+async function openPostComments(postId){
       loading.value = true
       if(postComments.value == null){
-         const data =  await useFetchPostComments(supabase, postId)
-         postComments.value = data
+         try {
+            postComments.value = await useFetchPostComments(supabase, postId)
+         } catch (error) {
+            errorLog.value = error            
+         }
       } else postComments.value = null
       loading.value = false
+}
+
+async function postComment(postId, post){
+   if(commentText.value){
+      try {
+         loading.value = true
+         await usePostComment(supabase, userId.value, postId, commentText.value)
+         commentText.value = ''
+         postComments.value = await useFetchPostComments(supabase, postId)
+         if(post.author !== userId.value){
+            await supabase.from('inbox').insert({text: `@${userId.value} commented your post #${postId}: ${commentText.value}`, user_id: post.author})
+         }
+      } catch (error) {
+         errorLog.value = error
+      } finally {loading.value = false}
+   }
 }
 </script>

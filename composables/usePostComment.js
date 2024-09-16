@@ -1,8 +1,8 @@
 export default async function(supabase, author, postId, commentText){
-   const commentRes = await supabase.from('post_comments').insert({author: author, post: postId, text: commentText})
-   if(!commentRes.error){
-      return "true"
-   } else {
-      return commentRes.error
+   try {
+      const { data } = await supabase.from('post_comments').insert({author: author, post: postId, text: commentText}).select()
+      return data
+   } catch (error) {
+      throw error
    }
 }
