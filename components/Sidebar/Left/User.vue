@@ -1,5 +1,5 @@
 <template>
-   <div class="flex flex-row items-center justify-center mt-auto mb-5 xs:w-full cursor-pointer hover:bg-gray-800 hover:text-gray-300 dark:hover:bg-gray-400">
+   <div class="flex flex-row items-center justify-center mt-auto mb-5 xs:w-full cursor-pointer hover:bg-gray-900 hover:text-gray-300 dark:hover:bg-gray-400">
 
       <div v-if="user.id" @click="$router.push(`/profile/${user.id}`)" class="flex flex-row w-full">
           <img :src="user.avatar" class="object-cover w-full h-full sm:w-10 sm:h-10 xl:w-12 xl:h-12">

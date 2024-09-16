@@ -20,7 +20,7 @@
                              <label for="username" class="block text-sm sm:text-xl font-medium leading-6">Write a title</label>
                              <div class="mt-2">
                                <div class="flex shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-800 focus-within:ring-2 focus-within:ring-inset focus-within:ring-gray-600 sm:max-w-md">
-                                 <input v-model="postTitle" type="text" name="username" id="username" autocomplete="username" class="block flex-1 w-full border-0 bg-transparent py-1.5 px-1  placeholder: focus:ring-0 sm:text-sm sm:leading-6" />
+                                 <input v-model="postTitle" type="text" class="block flex-1 w-full border-0 bg-transparent py-1.5 px-1  placeholder:focus:ring-0 sm:text-sm sm:leading-6" />
                                </div>
                              </div>
                            </div>

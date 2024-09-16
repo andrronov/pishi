@@ -2,7 +2,7 @@
    <div :class="{'dark': lightMode}">
       <div class="bg-black text-white dark:bg-white ">
          <div class="min-h-full">
-            <div class="grid grid-cols-12 mx-auto sm:px-6 gap-1 lg:max-w-7xl lg:px-8 lg:gap-5">
+            <div class="grid grid-cols-12 mx-auto sm:px-1 gap-1 lg:max-w-7xl lg:px-2 lg:gap-3">
                <!-- left sidebar -->
                <div class="md:block col-span-2 xs:col-span-1 sm:col-span-2">
                   <div class="sticky top-0">
@@ -40,7 +40,6 @@ onMounted(() => {
 // STORE USER DATA
 watchEffect(async() => {
    if(userId.value && !useUserStore().getUser().id){
-      console.log('getting...');
       const { data } = await supabase.from("profiles").select().eq("id", userId.value)
       useUserStore().setUser(data[0])
    }

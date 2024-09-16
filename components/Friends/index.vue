@@ -108,18 +108,16 @@ function toProfile(profileId){
 
 
 async function searchFriend(){
+  isSearching.value = true
    if(inputSearch.value.includes('@')){
-      isSearching.value = true
       const {data, error} = await supabase.from('profiles').select('*').eq('id', inputSearch.value.slice(1))
       searchResults.value = data
-      isSearching.value = false   
    } else {
-      isSearching.value = true
       const nameSurname = inputSearch.value.split(' ')
       const {data, error} = await supabase.from('profiles').select('*').ilike('name', nameSurname[0], 'surname', nameSurname[1], '%alba%')
       searchResults.value = data
-      isSearching.value = false
-   }
+    }
+    isSearching.value = false
 }
 
 watch(currentTab, () => {
