@@ -4,15 +4,15 @@
       <FastInbox class="sm:hidden" />
          
       <select @change="choosePosts" v-model="postSelect" id="posts" class="bg-gray-300 mt-3 border border-gray-200 text-gray-800 text-sm focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-      <option value="recs">Recomendations</option>
+      <option value="recs">Your friends posts</option>
       <option value="alls">All posts</option>
       </select>
+      <UISpinner v-if="loads" class="w-full my-4" />
 
         <div v-if="posts" class="relative">
   
             <Post v-for="(post, index) in posts" :post="post" :key="index" />
 
-            <UISpinner v-if="loads" />
             <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0 z-0" ref="el"></div>
             <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
         </div>

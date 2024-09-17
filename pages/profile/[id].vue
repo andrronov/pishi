@@ -12,11 +12,13 @@
       <div @click="navigateTo(`/friends/${user.id}`)" class="flex flex-row my-4 cursor-pointer self-center gap-4 text-white dark:text-black">
         <div class="flex flex-col items-center">
           <p>Subs</p>
-          <p v-if="userFollowers.length >= 0">{{ userFollowers.length }}</p>
+          <p v-if="userFollowers">{{ userFollowers.length }}</p>
+          <p v-else>-</p>
         </div>
         <div class="flex flex-col items-center">
           <p>Subscripts</p>
-          <p v-if="userFollowings.length >= 0">{{ userFollowings.length }}</p>
+          <p v-if="userFollowings">{{ userFollowings.length }}</p>
+          <p v-else>-</p>
         </div>
       </div>
     </div>
@@ -77,8 +79,8 @@ definePageMeta({
 const user = ref(null)
 const userId = ref(null)
 const userPosts = ref([])
-const userFollowings = ref([])
-const userFollowers = ref([])
+const userFollowings = ref(null)
+const userFollowers = ref(null)
 const loading = ref(true)
 const supabase = useSupabaseClient()
 const route = useRoute()

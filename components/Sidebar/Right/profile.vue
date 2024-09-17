@@ -2,7 +2,7 @@
   <div class="flex flex-col">
     <!-- card 'inbox' -->
     <SidebarRightFastCard title="Followers" :link="`/friends/${route.params.id}`">
-      <SidebarRightItem v-for="(frnd, index) in userFollowers" :key="index">
+      <div v-for="(frnd, index) in userFollowers" :key="index" :class="defaultTransition" class="p-3 border-b text-ellipsis whitespace-nowrap overflow-hidden border-white dark:border-black hover:bg-gray-100 hover:text-gray-900 cursor-pointer dark:hover:bg-gray-900 dark:hover:text-gray-100">
          <div @click="navigateTo(`/profile/${frnd.profiles.id}`)" class="flex flex-row justify-between items-center p-1.5">
             <img :src="frnd.profiles.avatar" class="w-11 h-11 object-cover" alt="photo">
             <div class="flex flex-col">
@@ -13,12 +13,12 @@
                <p class="text-center text-[10px] text-gray-300 dark:text-gray-700">@{{frnd.profiles.id}}</p>
             </div>
          </div>
-      </SidebarRightItem>
+      </div>
     </SidebarRightFastCard>
 
     <!-- card 'who to add' -->
     <SidebarRightFastCard title="Followings" :link="`/friends/${route.params.id}`">
-      <SidebarRightItem v-for="(fllwr, index) in userFollowings" :key="index">
+      <div v-for="(fllwr, index) in userFollowings" :key="index" :class="defaultTransition" class="p-3 border-b text-ellipsis whitespace-nowrap overflow-hidden border-white dark:border-black hover:bg-gray-100 hover:text-gray-900 cursor-pointer dark:hover:bg-gray-900 dark:hover:text-gray-100">
          <div @click="navigateTo(`/profile/${fllwr.profiles.id}`)" class="flex flex-row justify-between items-center p-1.5">
             <img :src="fllwr.profiles.avatar" class="w-11 h-11 object-cover" alt="photo">
             <div class="flex flex-col">
@@ -29,12 +29,13 @@
                <p class="text-center text-[10px] text-gray-300 dark:text-gray-700">@{{fllwr.profiles.id}}</p>
             </div>
          </div>
-      </SidebarRightItem>
+      </div>
     </SidebarRightFastCard>
   </div>
 </template>
 
 <script setup>
+const {defaultTransition} = useTailwindConfig()
 const supabase = useSupabaseClient();
 const route = useRoute();
 const userFollowers = ref(null);
@@ -66,8 +67,7 @@ async function fetchUserFollowings(){
   }
 }
 
-watchEffect(() => {
-  console.log(route.params.id);
+onMounted(() => {
    fetchUserSubs()
    fetchUserFollowings()
 })

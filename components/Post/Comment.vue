@@ -30,6 +30,4 @@ import { formatTimeAgo } from '@vueuse/core'
 const props = defineProps({
   comm: {type: Object}
 })
-
-console.log(props.comm);
  </script>
