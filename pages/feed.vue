@@ -13,7 +13,6 @@
             <Post v-for="(post, index) in posts" :post="post" :key="index" />
 
             <UISpinner v-if="loads" />
-
             <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0 z-0" ref="el"></div>
             <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
         </div>
@@ -48,7 +47,7 @@ let minRange = ref(0)
 let maxRange = ref(2)
 const isLoadMore = ref(false)
 
-const postSelect = ref('recs')
+const postSelect = ref('alls')
 
 const el = ref(null)
 useInfiniteScroll(el, () => {
@@ -112,6 +111,6 @@ function choosePosts(){
 
 onMounted(() => {
    userId.value = localStorage.getItem('userId')
-   fetchRecomendations()
+   fetchPosts()
 })
 </script>

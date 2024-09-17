@@ -1,5 +1,5 @@
 <template>
-    <div as="template" v-if="show">
+    <div as="template">
       <div as="div" class="relative z-30">
         <div as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-900 dark:bg-gray-200 bg-opacity-75 transition-opacity" />
@@ -31,10 +31,6 @@ import { onClickOutside } from '@vueuse/core'
 const target = ref(null)
 onClickOutside(target, event => emits('closeModal'))
 const props = defineProps({
-   show: {
-      type: Boolean,
-      default: false
-   },
    photo: {
       type: String,
    }

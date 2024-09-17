@@ -3,11 +3,11 @@
       
       <UILoading v-if="loading" />
       <Error v-if="errorLog" :error="errorLog" />
-      <Photo :show="showImg" :photo="post.img" @close-modal="showImg = false" />
+      <Photo v-if="showImg" :photo="post.img" @close-modal="showImg = false" />
 
       <div class="flex w-full flex-row justify-between relative items-center mb-6">
          <div class="flex flex-row items-center gap-4">
-            <div class="flex flex-row items-center gap-4 cursor-pointer" @click="toUser(post.profiles.id)">
+            <div class="flex flex-row items-center gap-4 cursor-pointer" @click="$router.push(`profile/${post.profiles.id}`)">
                <img :src="post.profiles.avatar" class="w-12 object-cover z-20 h-12" alt="avatar">
                <div class="flex flex-col">
                   <p class="font-medium">
@@ -18,7 +18,7 @@
             </div>
          </div>
          <NuxtIcon name="threepoints" @click="showPostMenu = true" class="justify-self-end cursor-pointer" />
-         <PostMenu v-if="showPostMenu" :isMyPage="post.profiles.id == userId" :show="showPostMenu" @delete="$emit('delete')" @close-modal="showPostMenu = false" />
+         <PostMenu v-if="showPostMenu" :postId="post.id" :isMyPage="post.profiles.id == userId" @close-modal="showPostMenu = false" />
       </div>
 
       <h2 class="text-sm dark:bg-black dark:text-white bg-white text-black text-center sm:text-xl leading-7">

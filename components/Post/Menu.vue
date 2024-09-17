@@ -6,7 +6,7 @@
       </div>
     </div> -->
 
-    <div as="template" v-if="show">
+    <div as="template">
       <div as="div" class="relative z-50">
         <div as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
           <div class="fixed inset-0 bg-gray-900 dark:bg-gray-200 bg-opacity-75 dark:bg-opacity-75 transition-opacity" />
@@ -23,7 +23,6 @@
                         <p>Delete post</p>
                      </div>
                   </div>
-                  <UISpinner class="w-full justify-self-center" v-if="false" />
                 </div>
                 <div class="bg-black dark:bg-gray-100 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button type="button" class="mt-3 inline-flex w-full justify-center bg-white px-3 py-2 text-sm text-white dark:text-black shadow-sm  hover:bg-gray-100 hover:text-gray-900 sm:mt-0 sm:w-auto dark:hover:text-gray-300 dark:hover:bg-gray-700 dark:ring-1 dark:ring-inset dark:ring-gray-300" @click="$emit('closeModal')" ref="cancelButtonRef">Close</button>
@@ -34,29 +33,40 @@
         </div>
       </div>
     </div>
+
+    <Error v-if="errorLog" :error="errorLog" />
 </template>
 
 <script setup>
 import { onClickOutside } from '@vueuse/core'
+
+const emits = defineEmits({closeModal(){}, fetchPosts(){}})
+
 const target = ref(null)
 onClickOutside(target, event => emits('closeModal'))
 
-const emits = defineEmits({
-   delete(){},
-   closeModal(){}
-})
+const errorLog = ref(null)
+const supabase = useSupabaseClient()
+const userId = ref(null)
+
 const props = defineProps({
-   show: {
-      type: Boolean,
-      default: false
-   },
    isMyPage: {
     type: Boolean,
     default: false
-   }
+   },
+   postId: {type: Number}
 })
 
-function deletePost(){
-   emits('delete')
+// DELETE POST
+async function deletePost(){
+  userId.value = localStorage.getItem('userId')
+  try {
+    await useDeletePost(supabase, props.postId, userId.value)
+    emits('closeModal')
+    window.location.reload()
+  } catch (error) {
+    errorLog.value = error    
+    console.log(error);
+  }
 }
 </script>

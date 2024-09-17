@@ -6,7 +6,7 @@
                <!-- left sidebar -->
                <div class="md:block col-span-2 xs:col-span-1 sm:col-span-2">
                   <div class="sticky top-0">
-                     <SidebarLeft />
+                     <LazySidebarLeft />
                   </div>
                </div>
  
@@ -18,7 +18,7 @@
                <!-- right sidebar -->
                <div class="hidden sm:col-span-4 sm:block">
                   <div class="sticky top-0">
-                     <SidebarRightProfile />
+                     <LazySidebarRightProfile />
                   </div>
                </div>
             </div>
@@ -40,7 +40,6 @@ onMounted(() => {
 // STORE USER DATA
 watchEffect(async() => {
    if(userId.value && !useUserStore().getUser().id){
-      console.log('getting...');
       const { data } = await supabase.from("profiles").select().eq("id", userId.value)
       useUserStore().setUser(data[0])
    }
