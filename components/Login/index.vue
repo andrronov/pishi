@@ -37,11 +37,11 @@ const loading = ref(false)
 async function signInWithEmail() {
    loading.value = true
    try {
-      const {data} = await props.supabase.auth.signInWithPassword({
+      const { data } = await props.supabase.auth.signInWithPassword({
        email: inputs.email,
        password: inputs.password,
      })
-     useUserStore().setUser(data.user)
+     localStorage.setItem('userId', data.user.id)
      navigateTo('/feed')
    } catch (error) {
       errorLog.value = error

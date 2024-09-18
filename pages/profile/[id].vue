@@ -5,9 +5,9 @@
     <div class="flex flex-row w-full justify-between items-center">
       <img v-if="user?.avatar" @click="photoView = user.avatar" :src="user.avatar" alt="avatar" class="h-28 w-28 object-cover xs:h-32 xs:w-32 cursor-pointer">
       <img v-else class="h-28 w-28 object-cover xs:h-32 xs:w-32 cursor-pointer bg-gray-600 dark:bg-gray-400">
-      <div v-if="user?.id" class="hidden xs:flex flex-col items-end xs:items-center gap-2">
+      <div v-if="user?.id" class="w-2/5 hidden xs:flex flex-col items-end xs:items-center gap-2">
         <h1 class="text-base xs:text-xl text-white dark:text-black">{{user.name}} {{user.surname}}</h1>
-        <h3 class="text-xs xs:text-sm text-center text-gray-400 dark:text-gray-600">@{{ user.id }}</h3>
+        <h3 class="text-xs break-words w-full xs:text-sm text-center text-gray-400 dark:text-gray-600">@{{ user.id }}</h3>
       </div>
       <div @click="navigateTo(`/friends/${user.id}`)" class="flex flex-row my-4 cursor-pointer self-center gap-4 text-white dark:text-black">
         <div class="flex flex-col items-center">

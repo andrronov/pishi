@@ -8,7 +8,11 @@
 
 <script setup>
 const lightMode = ref(false)
-onMounted(() => lightMode.value = JSON.parse(localStorage.getItem('mode')))
+const userThemeStore = useThemeStore()
+
+watchEffect(() => {
+   lightMode.value = userThemeStore.theme
+})
 </script>
 
 <style>

@@ -16,19 +16,17 @@ const isLight = ref(false)
 const supabase = useSupabaseClient()
 
 onMounted(() => {
-   const localData = localStorage.getItem('mode') 
-   isLight.value = JSON.parse(localData)
+   isLight.value = localStorage.getItem('mode')
 })
 
 function setMode(){
-   localStorage.setItem('mode', JSON.stringify(isLight.value))
-   reloadNuxtApp({path: '/feed'})
-   // navigateTo('/feed')
+   useThemeStore().setTheme(isLight.value)
 }
 
 async function logOutUser(){
   const isOut = confirm('Are you sure you want to log out?')
   if(isOut){
+   useUserStore().deleteUser()
    await supabase.auth.signOut()
    navigateTo('/login')
   }
