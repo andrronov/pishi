@@ -9,6 +9,10 @@ export const useUserStore = defineStore('user', {
          localStorage.setItem('userId', userData.id)
          this.uData = userData
       },
+      deleteUser(){
+         localStorage.removeItem('userId')
+         this.uData = {}
+      },
       getUser(){
          return this.uData
       },
