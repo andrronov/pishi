@@ -4,7 +4,6 @@ export default async function(supabase, postId) {
    .eq('post', postId)
    .order('created_at', {ascending: false})
    // .range(min, max)
-   console.log('ccc', data);
       if(!error){
          return data
       } else{

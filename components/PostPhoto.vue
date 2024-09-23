@@ -1,5 +1,5 @@
 <template>
-  <div as="template" v-if="props.modalOpen">
+  <div as="template">
     <div as="div" class="relative z-50" @close="$emit('closeModal')">
       <div
         as="template"
@@ -44,7 +44,6 @@
                         <div
                           class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6"
                         >
-
                           <div class="col-span-full">
                             <label
                               @change="addPhoto"
@@ -57,7 +56,6 @@
                                   class="my-4 text-transparent cursor-pointer"
                                   type="file"
                                 />
-                                <UISpinner class="my-4" v-if="imgLoad" />
                                 <img
                                   v-if="postPhoto"
                                   :src="postPhoto"
@@ -79,7 +77,6 @@
                     </div>
                   </form>
                 </div>
-                <UISpinner class="w-full justify-self-center" v-if="loading" />
                 <h2
                   v-if="success"
                   class="text-sm dark:bg-black dark:text-green-300 bg-white text-green-700 text-center sm:text-xl leading-7"
@@ -118,70 +115,60 @@
       </div>
     </div>
   </div>
+
+  <UILoading v-if="loading" />
 </template>
 
 <script setup>
-import { onClickOutside } from '@vueuse/core'
-const target = ref(null)
-onClickOutside(target, event => emit('closeModal'))
+import { onClickOutside } from "@vueuse/core";
+const target = ref(null);
+onClickOutside(target, (event) => emit("closeModal"));
 
 const emit = defineEmits({
-   closeModal(){
-      return false
-   }
- })
+  closeModal() {
+    return false;
+  },
+});
 
-const props = defineProps({
-   modalOpen: {
-      type: Boolean,
-      default: false,
-   }
-})
+const supabase = useSupabaseClient();
+const userId = ref(null)
+const loading = ref(false);
+const success = ref(false);
+const errorLog = ref(null);
+const postPhoto = ref(null);
 
-const supabase = useSupabaseClient()
-const session = await supabase.auth.getSession();
+onBeforeMount(() => userId.value = localStorage.getItem('userId'))
 
-const loading = ref(false)
- const imgLoad = ref(false)
- const success = ref(false)
- const errorLog = ref(null)
- const postPhoto = ref(null)
-
- async function addPhoto(ev){
-  imgLoad.value = true
-  const photo = ev.target.files[0]
-  const newPhotoName = Date.now() + (Math.random() * 1000).toFixed()
-  const {data, error} = await supabase.storage.from('photos').upload(newPhotoName, photo)
-  if(!error){
-    postPhoto.value = 'https://ilabflsecnunffcornxh.supabase.co/storage/v1/object/public/photos/' + data.path
-  }
-  if(postPhoto.value){
-    imgLoad.value = false
-  }
+async function addPhoto(ev) {
+  loading.value = true;
+  const photo = ev.target.files[0];
+  try {
+    postPhoto.value = await useAddPhoto(supabase, 'photos', photo)
+  } catch (error) {
+    errorLog.value = error
+  } finally {loading.value = false}
 }
 
-async function publishPhoto(){
-  if(postPhoto.value){
-    errorLog.value = null
-    const {data, error} = await supabase.from('photos').insert({author: session.data.session.user.id, img: postPhoto.value})
-    if(!error){
-        success.value = true
-          setTimeout(() =>{
-              success.value = false
-              postPhoto.value = null
-              emit('closeModal')
-          }, 1000)
-    } else {
-          errorLog.value = res.error
-          loading.value = false
-          setTimeout(() => {
-              errorLog.value = null
-          }, 5000);
-          throw new Error(res.error)
-        }
+async function publishPhoto() {
+  if (postPhoto.value) {
+    errorLog.value = null;
+    try {
+      const { data, error } = await supabase.from("photos").insert({ author: userId.value, img: postPhoto.value });
+      success.value = true;
+      setTimeout(() => {
+        success.value = false;
+        postPhoto.value = null;
+        emit("closeModal");
+      }, 1000);
+      
+    } catch (error) {
+      errorLog.value = error;
+      setTimeout(() => {
+        errorLog.value = null;
+      }, 5000);
+    } finally {loading.value = false}
   } else {
-    errorLog.value = {message: 'You cannot upload an empty photo'}
-    throw new Error()
+    errorLog.value = { message: "You cannot upload an empty photo" };
   }
 }
 </script>
