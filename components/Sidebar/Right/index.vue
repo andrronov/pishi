@@ -13,7 +13,7 @@
        </SidebarRightFastCard>
  
     <!-- card 'who to add' -->
-       <SidebarRightFastCard title="Who to add" :link="`/friends/${sessionUserId}`">
+       <SidebarRightFastCard title="Who to add" :link="`/friends/${userId}`">
          <div v-for="(profile, index) in possibleFriendsArray" :key="index" :class="defaultTransition" class="p-3 border-b text-ellipsis whitespace-nowrap overflow-hidden border-white dark:border-black hover:bg-gray-100 hover:text-gray-900 cursor-pointer dark:hover:bg-gray-900 dark:hover:text-gray-100">
              <div @click="navigateTo(`/profile/${profile.id}`)" class="flex flex-row justify-between items-center p-2">
                 <img :src="profile.avatar" class="w-14 h-14 object-cover" alt="photo">
