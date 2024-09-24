@@ -1,23 +1,22 @@
 <template>
-   <div>
+   <div class="relative">
       <MainSection @reload-posts="fetchPosts">
       <FastInbox class="sm:hidden" />
          
-      <select @change="choosePosts" v-model="postSelect" id="posts" class="bg-gray-300 mt-3 border border-gray-200 text-gray-800 text-sm focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-      <option value="recs">Your friends posts</option>
-      <option value="alls">All posts</option>
-      </select>
-      <UISpinner v-if="loads" class="w-full my-4" />
-
-        <div v-if="posts" class="relative">
-  
+         <select @change="choosePosts" v-model="postSelect" id="posts" class="bg-gray-300 mt-3 border border-gray-200 text-gray-800 text-sm focus:ring-gray-500 focus:border-gray-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+         <option value="recs">Your friends posts</option>
+         <option value="alls">All posts</option>
+         </select>
+         <UISpinner v-if="loads" class="w-full my-4" />
+         <div v-if="posts" class="relative">
+   
             <Post v-for="(post, index) in posts" :post="post" :key="index" />
 
             <div v-if="isLoadMore" class="h-52 w-full absolute bottom-0 bg-red-500 opacity-0 z-0" ref="el"></div>
-            <h1 v-if="noPosts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
-        </div>
+            <h1 v-if="noPosts && posts" class="p-2 text-lg font-medium text-center text-black bg-white dark:text-white dark:bg-black">There's no more posts!</h1>
+         </div>
         
-        <Error :error="errorLog" v-if="errorLog" />
+         <Error :error="errorLog" v-if="errorLog" />
 
         <p v-if="posts.length < 1 && !loads" class="text-white text-center dark:text-black">Create your first post!</p>
       </MainSection>
@@ -33,14 +32,11 @@ definePageMeta({
   layout: "default",
 });
 
-const loads = ref(false)
+const loads = ref(true)
 const errorLog = ref(null)
 const noPosts = ref(false)
-
 const userId = ref(null)
-
 let posts = ref([])
-
 const supabase = useSupabaseClient();
 
 let minRange = ref(0)
@@ -59,42 +55,32 @@ useInfiniteScroll(el, () => {
 
 async function fetchPosts(){
    loads.value = true
-   const {data, error} = await supabase.from('posts')
-      .select('*, profiles(*), post_likes(*)')
-      .order('created_at', {ascending: false})
-      .range(minRange.value, maxRange.value)
-   if(!error){
+   try {
+      const { data } = await supabase.from('posts').select('*, profiles(*), post_likes(*)').order('created_at', {ascending: false}).range(minRange.value, maxRange.value)
       posts.value.push(...data)
-      loads.value = false
       isLoadMore.value = true
       minRange.value += 3
       maxRange.value += 3
       if(data.length < 1){
          noPosts.value = true
       }
-   } else {
+   } catch (error) {
       errorLog.value = error
-      loads.value = false
-   }
+   } finally { loads.value = false }
 }
 
 async function fetchRecomendations(){
    loads.value = true
-   const followings = await useFetchFollowings(supabase, userId.value)
-   for(let i = 0; i < followings.length; i++){
-      const {data, error} = await supabase.from('posts').select('*, profiles(*), post_likes(*)')
-      .eq('author', followings[i].whos_following)
-      .order('created_at', {ascending: false})
-      if(!error){
+   try {
+      const followings = await useFetchFollowings(supabase, userId.value)
+      for(let i = 0; i < followings.length; i++){
+         const { data } = await supabase.from('posts').select('*, profiles(*), post_likes(*)').eq('author', followings[i].whos_following).order('created_at', {ascending: false})
          posts.value.push(...data)
-      loads.value = false
-      } else {
-      errorLog.value = error
-      loads.value = false
       }
-      
-   }
-   loads.value = false
+      isLoadMore.value = true
+   } catch (error) {
+      errorLog.value = error
+   } finally { loads.value = false }
 }
 
 function choosePosts(){
