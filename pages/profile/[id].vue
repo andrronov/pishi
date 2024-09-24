@@ -63,7 +63,7 @@
     <!-- <UISpinner v-if="!userPosts" class="self-center w-full mt-4" /> -->
   </div>
   
-  <Photo v-if="photoView" :photo="photoView" @close-modal="photoView = null" />
+  <UIPhoto v-if="photoView" :photo="photoView" @close-modal="photoView = null" />
   <ChangeProfile v-if="showChangeProfileModal" @close-modal="showChangeProfileModal = false" />
   <Error v-if="errorLog" :error="errorLog" />
 </template>

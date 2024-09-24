@@ -14,7 +14,7 @@
                <button>Post photo</button>
             </div>
          </div>
-         <AddPost class="z-50" v-if="modalOpen" @close-modal="modalOpen = false" @reload-posts="reloadPosts" />
+         <PostAdd class="z-50" v-if="modalOpen" @close-modal="modalOpen = false" @reload-posts="reloadPosts" />
          <PostPhoto class="z-50" v-if="modalPhotoOpen" @close-modal="modalPhotoOpen = false" />
          <slot></slot>
       </div>

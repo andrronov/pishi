@@ -3,7 +3,7 @@
       
       <UILoading v-if="loading" />
       <Error v-if="errorLog" :error="errorLog" />
-      <Photo v-if="showImg" :photo="post.img" @close-modal="showImg = false" />
+      <UIPhoto v-if="showImg" :photo="post.img" @close-modal="showImg = false" />
 
       <div class="flex w-full flex-row justify-between relative items-center mb-6">
          <div class="flex flex-row items-center gap-4">
